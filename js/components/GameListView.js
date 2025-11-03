@@ -169,14 +169,14 @@ class GameListView {
                      aria-label="Game: ${game.title}">
                 <div class="card-image-container">
                     <img class="card-image lazy-load" 
-                         data-src="${game.thumbnail}" 
+                         data-src="${this.getImageSrc(game.thumbnail, game.title)}" 
                          alt="${game.title} thumbnail"
                          loading="lazy"
                          width="300"
                          height="200"
                          decoding="async">
                     <div class="card-overlay">
-                        <span class="card-overlay-text">View Details</span>
+                        <span class="card-overlay-text">${game.isPlayable ? 'Play Now' : 'View Details'}</span>
                     </div>
                 </div>
                 <div class="card-content">
@@ -364,14 +364,28 @@ class GameListView {
      * Handle game card click for navigation
      * @param {string} gameId - ID of the clicked game
      */
-    handleGameClick(gameId) {
-        // Navigate to game detail page using hash-based routing
-        window.location.hash = `game/${gameId}`;
-        
-        // Trigger custom event for routing system
-        window.dispatchEvent(new CustomEvent('gameNavigate', {
-            detail: { gameId }
-        }));
+    async handleGameClick(gameId) {
+        try {
+            // Get the game data to check if it's playable
+            const game = await this.dataManager.getGameById(gameId);
+            
+            if (game && game.isPlayable && game.gameType) {
+                // Redirect to games page with the specific game
+                window.location.href = `games.html#${game.gameType}`;
+            } else {
+                // Navigate to game detail page using hash-based routing
+                window.location.hash = `game/${gameId}`;
+                
+                // Trigger custom event for routing system
+                window.dispatchEvent(new CustomEvent('gameNavigate', {
+                    detail: { gameId }
+                }));
+            }
+        } catch (error) {
+            console.error('Error handling game click:', error);
+            // Fallback to detail page
+            window.location.hash = `game/${gameId}`;
+        }
     }
 
     /**
@@ -491,6 +505,22 @@ class GameListView {
         if (window.searchFilter) {
             window.searchFilter.resetFilters();
         }
+    }
+
+    /**
+     * Get image source with fallback to placeholder
+     * @param {string} imagePath - Original image path
+     * @param {string} gameTitle - Game title for placeholder
+     * @returns {string} Image source URL
+     */
+    getImageSrc(imagePath, gameTitle) {
+        // For now, always use placeholder since we don't have actual images
+        if (typeof PlaceholderGenerator !== 'undefined') {
+            return PlaceholderGenerator.generateGameThumbnail(gameTitle);
+        }
+        
+        // Fallback if PlaceholderGenerator is not available
+        return imagePath || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+';
     }
 
     /**
