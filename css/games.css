@@ -53,7 +53,8 @@
     margin-bottom: 1rem;
 }
 
-.game-board {
+/* Tic Tac Toe specific board */
+.tic-tac-toe-game .game-board {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 4px;
@@ -64,7 +65,8 @@
     border-radius: 8px;
 }
 
-.cell {
+/* Tic Tac Toe cells */
+.tic-tac-toe-game .cell {
     aspect-ratio: 1;
     background: #fff;
     border: none;
@@ -79,16 +81,16 @@
     min-height: 80px;
 }
 
-.cell:hover:not(:disabled) {
+.tic-tac-toe-game .cell:hover:not(:disabled) {
     background: #e3f2fd;
     transform: scale(0.95);
 }
 
-.cell:disabled {
+.tic-tac-toe-game .cell:disabled {
     cursor: not-allowed;
 }
 
-.winning-cell {
+.tic-tac-toe-game .winning-cell {
     background: #4caf50 !important;
     color: white !important;
     animation: pulse 0.6s ease-in-out;
@@ -188,7 +190,8 @@
     color: #2c3e50;
 }
 
-.game-board {
+/* Memory Game specific board */
+.memory-game .game-board {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 0.5rem;
@@ -281,7 +284,7 @@
         gap: 0.5rem;
     }
     
-    .cell {
+    .tic-tac-toe-game .cell {
         min-height: 60px;
         font-size: 1.5rem;
     }
@@ -292,7 +295,7 @@
         height: auto;
     }
     
-    .game-board {
+    .tic-tac-toe-game .game-board {
         max-width: 300px;
         gap: 0.25rem;
     }
@@ -311,7 +314,7 @@
         font-size: 1.5rem;
     }
     
-    .cell {
+    .tic-tac-toe-game .cell {
         min-height: 50px;
         font-size: 1.2rem;
     }
@@ -331,7 +334,7 @@
         border: 2px solid #000;
     }
     
-    .cell {
+    .tic-tac-toe-game .cell {
         border: 2px solid #000;
     }
     
@@ -857,7 +860,7 @@
         animation: none;
     }
     
-    .cell:hover:not(:disabled),
+    .tic-tac-toe-game .cell:hover:not(:disabled),
     .choice-btn:hover {
         transform: none;
     }
