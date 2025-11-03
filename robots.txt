@@ -1,0 +1,33 @@
+User-agent: *
+Allow: /
+
+# Allow crawling of all content
+Allow: /css/
+Allow: /js/
+Allow: /images/
+Allow: /data/
+
+# Disallow crawling of sensitive or unnecessary files
+Disallow: /.git/
+Disallow: /.kiro/
+Disallow: /.vscode/
+Disallow: /tests/
+
+# Sitemap location
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Crawl delay (optional - helps prevent server overload)
+Crawl-delay: 1
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
