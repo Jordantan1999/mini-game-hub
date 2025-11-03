@@ -33,32 +33,42 @@ class MemoryGame {
         this.container.innerHTML = `
             <div class="memory-game-container">
                 <div class="game-header">
-                    <h2>🧠 Memory Game</h2>
-                    <h5>Attempts: <span id="attempts">${this.attempts}</span></h5>
+                    <h3>Memory Game</h3>
+                    <div class="game-stats">
+                        <div class="stat">
+                            <span class="stat-label">Attempts:</span>
+                            <span class="stat-value" id="attempts">${this.attempts}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Pairs:</span>
+                            <span class="stat-value" id="pairs">${this.matched.length / 2}/8</span>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="memory-grid" id="memory-grid">
                     ${this.cards.map((card, index) => `
                         <button class="memory-card-btn" 
                                 data-index="${index}"
-                                aria-label="card-${index}">
+                                aria-label="Memory card ${index + 1}">
                             ${this.flipped.includes(index) || this.matched.includes(index) ? card : '❓'}
                         </button>
                     `).join('')}
                 </div>
                 
                 ${this.matched.length === this.cards.length ? 
-                    '<h3 class="win-message">🎉 You Win!</h3>' : ''
+                    '<h3 class="win-message">🎉 Congratulations! You Won!</h3>' : ''
                 }
                 
                 <div class="game-controls">
-                    <button class="btn reset-btn" id="reset-btn">🔄 Reset</button>
-                    <button class="btn hint-btn" id="hint-btn">💡 Hint</button>
+                    <button class="btn" id="reset-btn">New Game</button>
+                    <button class="btn" id="hint-btn">Hint</button>
                 </div>
                 
                 <div class="game-instructions">
-                    <p>🎯 Click cards to flip them and find matching pairs</p>
-                    <p>🏆 Match all pairs in the fewest attempts!</p>
+                    <p>🧠 Click cards to flip them over</p>
+                    <p>🎯 Match pairs of identical symbols</p>
+                    <p>🏆 Complete the game in the fewest attempts!</p>
                 </div>
             </div>
         `;
@@ -117,6 +127,7 @@ class MemoryGame {
                 // Match found!
                 this.matched = [...this.matched, first, second];
                 this.flipped = [];
+                this.updatePairs();
                 
                 // Check for win
                 if (this.matched.length === this.cards.length) {
@@ -152,6 +163,13 @@ class MemoryGame {
         const attemptsSpan = this.container.querySelector('#attempts');
         if (attemptsSpan) {
             attemptsSpan.textContent = this.attempts;
+        }
+    }
+    
+    updatePairs() {
+        const pairsSpan = this.container.querySelector('#pairs');
+        if (pairsSpan) {
+            pairsSpan.textContent = `${this.matched.length / 2}/8`;
         }
     }
     
