@@ -101,31 +101,50 @@
     50% { transform: scale(1.05); }
 }
 
-/* Memory Game Styles - Clean & Simple */
+/* Memory Game Styles */
 .memory-game-container {
     text-align: center;
-    max-width: 500px;
-    margin: 0 auto;
 }
 
 .memory-game-container .game-header {
+    text-align: center;
     margin-bottom: 2rem;
 }
 
-.memory-game-container h2 {
+.memory-game-container .game-header h3 {
     color: #2c3e50;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
 }
 
-.memory-game-container h5 {
+.memory-game-container .game-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1rem 0;
+}
+
+.memory-game-container .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.memory-game-container .stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.memory-game-container .stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
     color: #007bff;
-    font-weight: 600;
 }
 
 .memory-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.75rem;
+    gap: 1rem;
     max-width: 400px;
     margin: 2rem auto;
     padding: 1rem;
@@ -133,29 +152,33 @@
 
 .memory-card-btn {
     aspect-ratio: 1;
-    background: #f8f9fa;
+    background: #fff;
     border: 2px solid #dee2e6;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: bold;
     transition: all 0.2s ease;
-    min-height: 70px;
+    min-height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #2c3e50;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .memory-card-btn:hover {
     transform: scale(1.05);
     border-color: #007bff;
     background: #e3f2fd;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
 }
 
 .memory-card-btn.matched {
     background: #d4edda;
     border-color: #28a745;
     color: #155724;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
 }
 
 .memory-card-btn.matched:hover {
@@ -184,6 +207,7 @@
     color: #28a745;
     margin: 2rem 0;
     font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .memory-game-container .game-controls {
@@ -191,7 +215,6 @@
     justify-content: center;
     gap: 1rem;
     margin: 2rem 0;
-    flex-wrap: wrap;
 }
 
 .memory-game-container .game-instructions {
@@ -208,10 +231,28 @@
 }
 
 /* Responsive design */
+@media (max-width: 768px) {
+    .memory-grid {
+        gap: 0.75rem;
+        padding: 0.75rem;
+        max-width: 350px;
+    }
+    
+    .memory-card-btn {
+        min-height: 70px;
+        font-size: 1.5rem;
+    }
+    
+    .memory-game-container .game-stats {
+        gap: 1rem;
+    }
+}
+
 @media (max-width: 480px) {
     .memory-grid {
         gap: 0.5rem;
         padding: 0.5rem;
+        max-width: 300px;
     }
     
     .memory-card-btn {
