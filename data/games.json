@@ -166,6 +166,188 @@
       "releaseDate": "2011-11-18",
       "developer": "Mojang Studios",
       "tags": ["sandbox", "creative", "survival", "multiplayer"]
+    },
+    {
+      "id": "tic-tac-toe-mini",
+      "title": "Tic Tac Toe",
+      "description": "Classic strategy game for two players. Get three in a row to win!",
+      "fullDescription": "Play the timeless game of Tic Tac Toe right in your browser! This classic strategy game pits two players against each other in a battle of wits. Take turns placing X's and O's on a 3x3 grid, and be the first to get three of your marks in a row - horizontally, vertically, or diagonally. Simple to learn but engaging to play, perfect for a quick game break.",
+      "genre": ["Strategy", "Puzzle", "Mini-Game"],
+      "rating": 4.3,
+      "reviewCount": 1247,
+      "thumbnail": "images/thumbnails/tic-tac-toe.jpg",
+      "screenshots": [
+        "images/screenshots/tic-tac-toe-1.jpg"
+      ],
+      "systemRequirements": {
+        "minimum": "Any modern web browser with JavaScript enabled",
+        "recommended": "Chrome, Firefox, Safari, or Edge with JavaScript enabled"
+      },
+      "officialWebsite": "games.html#tic-tac-toe",
+      "downloadLinks": [
+        {"platform": "Play Online", "url": "games.html#tic-tac-toe"}
+      ],
+      "releaseDate": "2025-01-01",
+      "developer": "Game Hub Team",
+      "tags": ["browser-game", "strategy", "two-player", "classic"],
+      "isPlayable": true,
+      "gameType": "tic-tac-toe"
+    },
+    {
+      "id": "snake-mini",
+      "title": "Snake Game",
+      "description": "Guide the snake to eat food and grow longer without hitting walls or yourself!",
+      "fullDescription": "Experience the classic Snake game that captivated millions! Control a growing snake as it moves around the screen, eating food to increase your score and length. But be careful - don't let the snake run into the walls or its own tail, or it's game over! Features smooth controls, score tracking, and increasing difficulty as your snake grows longer.",
+      "genre": ["Arcade", "Action", "Mini-Game"],
+      "rating": 4.5,
+      "reviewCount": 892,
+      "thumbnail": "images/thumbnails/snake.jpg",
+      "screenshots": [
+        "images/screenshots/snake-1.jpg"
+      ],
+      "systemRequirements": {
+        "minimum": "Any modern web browser with JavaScript enabled",
+        "recommended": "Chrome, Firefox, Safari, or Edge with JavaScript enabled"
+      },
+      "officialWebsite": "games.html#snake",
+      "downloadLinks": [
+        {"platform": "Play Online", "url": "games.html#snake"}
+      ],
+      "releaseDate": "2025-01-01",
+      "developer": "Game Hub Team",
+      "tags": ["browser-game", "arcade", "retro", "high-score"],
+      "isPlayable": true,
+      "gameType": "snake"
+    },
+    {
+      "id": "memory-mini",
+      "title": "Memory Card Game",
+      "description": "Test your memory by matching pairs of cards in the fewest moves!",
+      "fullDescription": "Challenge your memory with this engaging card matching game! Flip cards to reveal symbols and try to find matching pairs. The goal is to match all pairs in the fewest moves and shortest time possible. Features beautiful card animations, move counter, timer, and hint system to help when you're stuck. Perfect for improving memory and concentration skills.",
+      "genre": ["Puzzle", "Memory", "Mini-Game"],
+      "rating": 4.4,
+      "reviewCount": 634,
+      "thumbnail": "images/thumbnails/memory-game.jpg",
+      "screenshots": [
+        "images/screenshots/memory-1.jpg"
+      ],
+      "systemRequirements": {
+        "minimum": "Any modern web browser with JavaScript enabled",
+        "recommended": "Chrome, Firefox, Safari, or Edge with JavaScript enabled"
+      },
+      "officialWebsite": "games.html#memory",
+      "downloadLinks": [
+        {"platform": "Play Online", "url": "games.html#memory"}
+      ],
+      "releaseDate": "2025-01-01",
+      "developer": "Game Hub Team",
+      "tags": ["browser-game", "puzzle", "memory", "brain-training"],
+      "isPlayable": true,
+      "gameType": "memory"
+    },
+    {
+      "id": "rock-paper-scissors-mini",
+      "title": "Rock Paper Scissors",
+      "description": "Classic game of strategy and luck against the computer!",
+      "fullDescription": "Challenge the computer in this timeless game of Rock Paper Scissors! Make your choice and see if you can outsmart the AI. Features animated choices, score tracking, and instant results. Rock beats Scissors, Paper beats Rock, and Scissors beats Paper. Simple rules, endless fun!",
+      "genre": ["Strategy", "Casual", "Mini-Game"],
+      "rating": 4.2,
+      "reviewCount": 756,
+      "thumbnail": "images/thumbnails/rock-paper-scissors.jpg",
+      "screenshots": [
+        "images/screenshots/rps-1.jpg"
+      ],
+      "systemRequirements": {
+        "minimum": "Any modern web browser with JavaScript enabled",
+        "recommended": "Chrome, Firefox, Safari, or Edge with JavaScript enabled"
+      },
+      "officialWebsite": "games.html#rps",
+      "downloadLinks": [
+        {"platform": "Play Online", "url": "games.html#rps"}
+      ],
+      "releaseDate": "2025-01-01",
+      "developer": "Game Hub Team",
+      "tags": ["browser-game", "strategy", "casual", "quick-play"],
+      "isPlayable": true,
+      "gameType": "rps"
+    },
+    {
+      "id": "guess-number-mini",
+      "title": "Guess the Number",
+      "description": "Can you guess the secret number in 10 attempts or less?",
+      "fullDescription": "Test your deduction skills in this number guessing game! The computer picks a random number between 1 and 100, and you have 10 attempts to find it. Get helpful hints after each guess - too high or too low. Features a progress bar showing remaining attempts and encouraging feedback to keep you motivated.",
+      "genre": ["Puzzle", "Logic", "Mini-Game"],
+      "rating": 4.1,
+      "reviewCount": 543,
+      "thumbnail": "images/thumbnails/guess-number.jpg",
+      "screenshots": [
+        "images/screenshots/guess-1.jpg"
+      ],
+      "systemRequirements": {
+        "minimum": "Any modern web browser with JavaScript enabled",
+        "recommended": "Chrome, Firefox, Safari, or Edge with JavaScript enabled"
+      },
+      "officialWebsite": "games.html#guess",
+      "downloadLinks": [
+        {"platform": "Play Online", "url": "games.html#guess"}
+      ],
+      "releaseDate": "2025-01-01",
+      "developer": "Game Hub Team",
+      "tags": ["browser-game", "puzzle", "logic", "educational"],
+      "isPlayable": true,
+      "gameType": "guess"
+    },
+    {
+      "id": "sudoku-4x4-mini",
+      "title": "Sudoku 4×4",
+      "description": "Solve the puzzle by filling the grid with numbers 1-4!",
+      "fullDescription": "Enjoy a simplified version of the classic Sudoku puzzle! This 4×4 grid version is perfect for beginners or quick brain training sessions. Fill each row, column, and 2×2 box with numbers 1-4 without repeating. Features multiple puzzles, hint system, and solution checking. Great for developing logical thinking skills.",
+      "genre": ["Puzzle", "Logic", "Mini-Game"],
+      "rating": 4.6,
+      "reviewCount": 432,
+      "thumbnail": "images/thumbnails/sudoku-4x4.jpg",
+      "screenshots": [
+        "images/screenshots/sudoku-1.jpg"
+      ],
+      "systemRequirements": {
+        "minimum": "Any modern web browser with JavaScript enabled",
+        "recommended": "Chrome, Firefox, Safari, or Edge with JavaScript enabled"
+      },
+      "officialWebsite": "games.html#sudoku",
+      "downloadLinks": [
+        {"platform": "Play Online", "url": "games.html#sudoku"}
+      ],
+      "releaseDate": "2025-01-01",
+      "developer": "Game Hub Team",
+      "tags": ["browser-game", "puzzle", "sudoku", "brain-training"],
+      "isPlayable": true,
+      "gameType": "sudoku"
+    },
+    {
+      "id": "typing-speed-test-mini",
+      "title": "Typing Speed Test",
+      "description": "Test and improve your typing speed and accuracy!",
+      "fullDescription": "Measure and improve your typing skills with this comprehensive typing speed test! Type various paragraphs as quickly and accurately as possible within 60 seconds. Track your WPM (Words Per Minute), CPM (Characters Per Minute), and accuracy percentage. Features real-time feedback, progress tracking, and multiple test paragraphs to keep practice sessions engaging.",
+      "genre": ["Educational", "Skill", "Mini-Game"],
+      "rating": 4.7,
+      "reviewCount": 1289,
+      "thumbnail": "images/thumbnails/typing-test.jpg",
+      "screenshots": [
+        "images/screenshots/typing-1.jpg"
+      ],
+      "systemRequirements": {
+        "minimum": "Any modern web browser with JavaScript enabled and keyboard",
+        "recommended": "Chrome, Firefox, Safari, or Edge with JavaScript enabled and physical keyboard"
+      },
+      "officialWebsite": "games.html#typing",
+      "downloadLinks": [
+        {"platform": "Play Online", "url": "games.html#typing"}
+      ],
+      "releaseDate": "2025-01-01",
+      "developer": "Game Hub Team",
+      "tags": ["browser-game", "educational", "typing", "skill-building"],
+      "isPlayable": true,
+      "gameType": "typing"
     }
   ]
 }
