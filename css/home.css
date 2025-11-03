@@ -253,9 +253,19 @@
         max-width: 280px;
     }
     
-    #current-game-container .snake-game #snake-canvas {
+    #current-game-container .snake-game .snake-board {
         max-width: 100%;
-        height: auto;
+        margin: 0 auto;
+    }
+    
+    #current-game-container .snake-game .touch-controls {
+        margin: 1rem 0;
+    }
+    
+    #current-game-container .snake-game .touch-btn {
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 1rem;
     }
     
     #current-game-container .memory-game .game-board {

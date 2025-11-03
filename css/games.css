@@ -98,6 +98,365 @@
 
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Memory Game Styles */
+.memory-game {
+    text-align: center;
+}
+
+.memory-game .game-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1rem 0;
+}
+
+.memory-game .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.memory-game .stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.memory-game .stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.memory-game .game-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+.memory-card {
+    aspect-ratio: 1;
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    transform-style: preserve-3d;
+    min-height: 80px;
+}
+
+.memory-card:hover {
+    transform: scale(1.05);
+    border-color: #007bff;
+}
+
+.memory-card.flipped {
+    transform: rotateY(180deg);
+}
+
+.memory-card.matched {
+    background: #d4edda;
+    border-color: #28a745;
+    cursor: default;
+}
+
+.memory-card.matched:hover {
+    transform: none;
+}
+
+.memory-card.hint {
+    animation: hintPulse 1.5s ease-in-out;
+    border-color: #ffc107;
+    background: #fff3cd;
+}
+
+@keyframes hintPulse {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    }
+    50% { 
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+    }
+}
+
+.card-front,
+.card-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 6px;
+    backface-visibility: hidden;
+}
+
+.card-front {
+    background: #007bff;
+    color: white;
+    z-index: 2;
+}
+
+.card-back {
+    background: white;
+    color: #2c3e50;
+    transform: rotateY(180deg);
+    font-size: 2rem;
+}
+
+/* Typing Speed Test Styles */
+.typing-test-game {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.typing-test-game .timer-display {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.typing-test-game .text-display-container {
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    font-family: 'Courier New', monospace;
+    line-height: 1.6;
+}
+
+.typing-test-game .text-display {
+    font-size: 1.1rem;
+    color: #495057;
+}
+
+.typing-test-game .text-display .correct {
+    background: #d4edda;
+    color: #155724;
+}
+
+.typing-test-game .text-display .incorrect {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.typing-test-game .text-display .current {
+    background: #007bff;
+    color: white;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+}
+
+.typing-test-game .typing-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    line-height: 1.5;
+    resize: vertical;
+    min-height: 120px;
+}
+
+.typing-test-game .typing-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.typing-test-game .progress-bar {
+    background: #e9ecef;
+    border-radius: 10px;
+    height: 20px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+}
+
+.typing-test-game .progress-fill {
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.typing-test-game .timer-progress {
+    background: linear-gradient(90deg, #28a745, #20c997);
+}
+
+.typing-test-game .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.typing-test-game .stat-card {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    border: 2px solid #dee2e6;
+}
+
+.typing-test-game .stat-card h4 {
+    font-size: 1.8rem;
+    color: #007bff;
+    margin: 0;
+}
+
+.typing-test-game .stat-card p {
+    margin: 0.5rem 0 0 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.typing-test-game .feedback-container {
+    background: #e3f2fd;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.typing-test-game .feedback-text {
+    margin: 0;
+    color: #1565c0;
+    font-weight: 500;
+}
+
+/* Results Styles */
+.results-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #28a745;
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.results-header {
+    margin-bottom: 2rem;
+}
+
+.results-header h3 {
+    color: #28a745;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+}
+
+.performance-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border: 2px solid;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.final-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.final-stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.final-stat-card .stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #007bff;
+    display: block;
+}
+
+.final-stat-card .stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.performance-feedback {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    text-align: left;
+}
+
+.performance-feedback h4 {
+    color: #007bff;
+    margin-bottom: 1rem;
+}
+
+.typing-goals {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+}
+
+.typing-goals h4 {
+    color: #007bff;
+    margin-bottom: 1rem;
+}
+
+.goals-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+}
+
+.goal-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #dee2e6;
+}
+
+.goal-item.achieved {
+    background: #d4edda;
+    border-left-color: #28a745;
+}
+
+.goal-item.achieved .goal-speed {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.goal-speed {
+    font-weight: 600;
+    color: #007bff;
+}
+
+.goal-desc {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
     50% { transform: scale(1.1); }
 }
 
@@ -106,56 +465,61 @@
     text-align: center;
 }
 
-.game-info {
-    display: flex;
-    justify-content: space-around;
-    margin: 1rem 0;
-    font-weight: 600;
-}
-
-.score, .high-score {
+.snake-game h2 {
     color: #2c3e50;
+    margin-bottom: 1rem;
 }
 
-.game-canvas-container {
-    position: relative;
+.snake-game h5 {
+    color: #495057;
+    margin-bottom: 2rem;
+}
+
+.game-board-container {
+    margin: 2rem 0;
+    display: flex;
+    justify-content: center;
+}
+
+.snake-board {
     display: inline-block;
+    border-radius: 6px;
+    overflow: hidden;
+    padding: 6px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.game-over-text {
+    color: #dc3545;
     margin: 1rem 0;
+    font-weight: bold;
 }
 
-#snake-canvas {
-    border: 3px solid #2c3e50;
+/* Touch Controls */
+.touch-controls {
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.touch-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.touch-btn {
+    min-width: 50px;
+    min-height: 50px;
+    font-size: 1.2rem;
+    font-weight: bold;
     border-radius: 8px;
-    background: #1a1a1a;
-}
-
-.game-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
-}
-
-.overlay-content {
-    text-align: center;
-    color: white;
-    padding: 2rem;
-}
-
-.overlay-content h4 {
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-}
-
-.overlay-content p {
-    margin-bottom: 1.5rem;
-    color: #ccc;
 }
 
 /* Memory Game Styles */
