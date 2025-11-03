@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Homepage -->
+  <url>
+    <loc>https://yourdomain.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <!-- Game Detail Pages -->
+  <url>
+    <loc>https://yourdomain.com/game/cyberpunk-2077</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://yourdomain.com/game/the-witcher-3</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://yourdomain.com/game/hollow-knight</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://yourdomain.com/game/stardew-valley</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://yourdomain.com/game/among-us</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://yourdomain.com/game/minecraft</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <!-- Genre Pages -->
+  <url>
+    <loc>https://yourdomain.com/?genre=RPG</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://yourdomain.com/?genre=Action</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://yourdomain.com/?genre=Adventure</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://yourdomain.com/?genre=Indie</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://yourdomain.com/?genre=Simulation</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://yourdomain.com/?genre=Multiplayer</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://yourdomain.com/?genre=Sandbox</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+</urlset>
