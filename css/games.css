@@ -151,13 +151,13 @@
     min-height: 80px;
 }
 
-.memory-card:hover {
+.memory-card:hover:not(.flipped):not(.matched) {
     transform: scale(1.05);
     border-color: #007bff;
 }
 
 .memory-card.flipped {
-    transform: rotateY(180deg);
+    transform: rotateY(180deg) !important;
 }
 
 .memory-card.matched {
