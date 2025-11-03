@@ -75,8 +75,9 @@ class SnakeGame {
         pauseBtn.addEventListener('click', () => this.togglePause());
         restartBtn.addEventListener('click', () => this.restartGame());
         
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+        // Keyboard controls - bind to instance method for proper cleanup
+        this.keyHandler = (e) => this.handleKeyPress(e);
+        document.addEventListener('keydown', this.keyHandler);
     }
     
     handleKeyPress(event) {
@@ -118,6 +119,11 @@ class SnakeGame {
     }
     
     startGame() {
+        // Clear any existing game loop first
+        if (this.gameLoop) {
+            clearInterval(this.gameLoop);
+        }
+        
         this.gameRunning = true;
         this.hideOverlay();
         this.container.querySelector('#start-btn').disabled = true;
@@ -295,6 +301,12 @@ class SnakeGame {
             clearInterval(this.gameLoop);
         }
         this.gameRunning = false;
+        
+        // Remove keyboard event listener
+        if (this.keyHandler) {
+            document.removeEventListener('keydown', this.keyHandler);
+        }
+        
         if (this.container) {
             this.container.innerHTML = '';
         }
