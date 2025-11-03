@@ -119,7 +119,20 @@ class MemoryGame {
     
     flipCard(cardElement) {
         const cardId = parseInt(cardElement.dataset.id);
+        
+        // Validate card ID and card existence
+        if (isNaN(cardId) || cardId < 0 || cardId >= this.cards.length) {
+            console.error('Invalid card ID:', cardId);
+            return;
+        }
+        
         const card = this.cards[cardId];
+        
+        // Ensure card exists and has required properties
+        if (!card || typeof card.isFlipped === 'undefined' || typeof card.isMatched === 'undefined') {
+            console.error('Invalid card object:', card);
+            return;
+        }
         
         // Can't flip if already flipped, matched, or game completed
         if (card.isFlipped || card.isMatched || this.gameCompleted) {
@@ -155,7 +168,21 @@ class MemoryGame {
     }
     
     checkForMatch() {
+        // Ensure we have exactly 2 flipped cards
+        if (this.flippedCards.length !== 2) {
+            console.warn('checkForMatch called without exactly 2 flipped cards');
+            this.flippedCards = [];
+            return;
+        }
+        
         const [card1, card2] = this.flippedCards;
+        
+        // Ensure both cards exist and have symbols
+        if (!card1 || !card2 || !card1.symbol || !card2.symbol) {
+            console.error('Invalid cards in flippedCards array');
+            this.flippedCards = [];
+            return;
+        }
         
         if (card1.symbol === card2.symbol) {
             // Match found
