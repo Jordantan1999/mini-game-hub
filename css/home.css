@@ -206,6 +206,16 @@
     margin: 0 auto;
 }
 
+/* Game Container Styling */
+.game-content-area .game-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
 /* Mobile game container optimizations */
 @media (max-width: 768px) {
     #current-game-container {
@@ -213,13 +223,12 @@
     }
     
     /* Ensure games fit mobile screens */
-    #current-game-container .game-container {
+    .game-content-area .game-container {
         max-width: 100%;
         margin: 0;
         padding: 1rem;
-        box-shadow: none;
-        border-radius: 0;
-        background: transparent;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
     }
     
     /* Optimize game boards for mobile */
@@ -237,6 +246,24 @@
         min-height: 48px;
         min-width: 48px;
         font-size: 1rem;
+    }
+    
+    /* Optimize specific games for mobile */
+    #current-game-container .tic-tac-toe-game .game-board {
+        max-width: 280px;
+    }
+    
+    #current-game-container .snake-game #snake-canvas {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    #current-game-container .memory-game .game-board {
+        max-width: 320px;
+    }
+    
+    #current-game-container .sudoku-game .sudoku-grid {
+        max-width: 280px;
     }
 }
 
