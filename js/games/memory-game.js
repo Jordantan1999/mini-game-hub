@@ -1,347 +1,202 @@
 /**
- * Memory Card Game
- * Match pairs of cards by flipping them over
+ * Memory Game - Clean Rewrite
+ * Classic memory matching game with simple, reliable logic
  */
 class MemoryGame {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
-        this.cards = [];
-        this.flippedCards = [];
-        this.matchedPairs = 0;
-        this.moves = 0;
-        this.gameStarted = false;
-        this.gameCompleted = false;
-        this.startTime = null;
         
-        // Card symbols (emojis)
-        this.symbols = ['🎮', '🎯', '🎲', '🎪', '🎨', '🎭', '🎪', '🎸'];
+        // Initial set of pairs (8 pairs = 16 cards)
+        this.initialCards = ['🍎', '🍎', '🍌', '🍌', '🍇', '🍇', '🍓', '🍓', 
+                            '🍊', '🍊', '🥝', '🥝', '🍒', '🍒', '🥭', '🥭'];
+        
+        // Game state
+        this.cards = this.shuffle([...this.initialCards]);
+        this.flipped = []; // indices currently flipped
+        this.matched = []; // matched indices
+        this.attempts = 0;
         
         this.init();
     }
     
     init() {
-        this.setupCards();
         this.render();
         this.attachEventListeners();
     }
     
-    setupCards() {
-        // Create pairs of cards
-        const cardSymbols = [...this.symbols, ...this.symbols];
-        
-        // Shuffle the cards
-        for (let i = cardSymbols.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [cardSymbols[i], cardSymbols[j]] = [cardSymbols[j], cardSymbols[i]];
-        }
-        
-        // Create card objects
-        this.cards = cardSymbols.map((symbol, index) => ({
-            id: index,
-            symbol: symbol,
-            isFlipped: false,
-            isMatched: false
-        }));
+    // Simple shuffle function
+    shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
     }
     
     render() {
         this.container.innerHTML = `
-            <div class="memory-game">
+            <div class="memory-game-container">
                 <div class="game-header">
-                    <h3>Memory Game</h3>
-                    <div class="game-stats">
-                        <div class="stat">
-                            <span class="stat-label">Moves:</span>
-                            <span class="stat-value" id="moves">0</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">Time:</span>
-                            <span class="stat-value" id="timer">00:00</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">Pairs:</span>
-                            <span class="stat-value" id="pairs">${this.matchedPairs}/${this.symbols.length}</span>
-                        </div>
-                    </div>
+                    <h2>🧠 Memory Game</h2>
+                    <h5>Attempts: <span id="attempts">${this.attempts}</span></h5>
                 </div>
-                <div class="game-board" id="game-board">
-                    ${this.cards.map(card => `
-                        <div class="memory-card ${card.isFlipped ? 'flipped' : ''} ${card.isMatched ? 'matched' : ''}" 
-                             data-id="${card.id}"
-                             tabindex="0"
-                             role="button"
-                             aria-label="Memory card">
-                            <div class="card-front">?</div>
-                            <div class="card-back">${card.symbol}</div>
-                        </div>
+                
+                <div class="memory-grid" id="memory-grid">
+                    ${this.cards.map((card, index) => `
+                        <button class="memory-card-btn" 
+                                data-index="${index}"
+                                aria-label="card-${index}">
+                            ${this.flipped.includes(index) || this.matched.includes(index) ? card : '❓'}
+                        </button>
                     `).join('')}
                 </div>
+                
+                ${this.matched.length === this.cards.length ? 
+                    '<h3 class="win-message">🎉 You Win!</h3>' : ''
+                }
+                
                 <div class="game-controls">
-                    <button class="btn" id="new-game-btn">New Game</button>
-                    <button class="btn" id="hint-btn">Hint</button>
+                    <button class="btn reset-btn" id="reset-btn">🔄 Reset</button>
+                    <button class="btn hint-btn" id="hint-btn">💡 Hint</button>
                 </div>
+                
                 <div class="game-instructions">
-                    <p>🧠 Click cards to flip them over</p>
-                    <p>🎯 Match pairs of identical symbols</p>
-                    <p>⏱️ Complete the game in the fewest moves and fastest time!</p>
+                    <p>🎯 Click cards to flip them and find matching pairs</p>
+                    <p>🏆 Match all pairs in the fewest attempts!</p>
                 </div>
             </div>
         `;
     }
     
     attachEventListeners() {
-        const gameBoard = this.container.querySelector('#game-board');
-        const newGameBtn = this.container.querySelector('#new-game-btn');
+        const grid = this.container.querySelector('#memory-grid');
+        const resetBtn = this.container.querySelector('#reset-btn');
         const hintBtn = this.container.querySelector('#hint-btn');
         
-        gameBoard.addEventListener('click', (e) => this.handleCardClick(e));
-        gameBoard.addEventListener('keydown', (e) => this.handleCardKeydown(e));
-        newGameBtn.addEventListener('click', () => this.newGame());
-        hintBtn.addEventListener('click', () => this.showHint());
+        if (grid) {
+            grid.addEventListener('click', (e) => this.handleCardClick(e));
+        }
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => this.handleReset());
+        }
+        if (hintBtn) {
+            hintBtn.addEventListener('click', () => this.showHint());
+        }
     }
     
     handleCardClick(event) {
-        const cardElement = event.target.closest('.memory-card');
-        if (!cardElement) return;
+        const button = event.target.closest('.memory-card-btn');
+        if (!button) return;
         
-        this.flipCard(cardElement);
+        const index = parseInt(button.dataset.index);
+        this.handleClick(index);
     }
     
-    handleCardKeydown(event) {
-        if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            const cardElement = event.target.closest('.memory-card');
-            if (cardElement) {
-                this.flipCard(cardElement);
-            }
-        }
-    }
-    
-    flipCard(cardElement) {
-        const cardId = parseInt(cardElement.dataset.id);
-        
-        // Validate card ID and card existence
-        if (isNaN(cardId) || cardId < 0 || cardId >= this.cards.length) {
-            console.error('Invalid card ID:', cardId);
+    handleClick(index) {
+        // Can't click if already flipped or matched
+        if (this.flipped.includes(index) || this.matched.includes(index)) {
             return;
         }
         
-        const card = this.cards[cardId];
-        
-        // Ensure card exists and has required properties
-        if (!card) {
-            console.error('Card not found for ID:', cardId);
+        // Can't flip more than 2 cards
+        if (this.flipped.length >= 2) {
             return;
         }
         
-        // Initialize properties if they don't exist (defensive programming)
-        if (typeof card.isFlipped === 'undefined') card.isFlipped = false;
-        if (typeof card.isMatched === 'undefined') card.isMatched = false;
+        // Add to flipped array
+        const newFlipped = [...this.flipped, index];
+        this.flipped = newFlipped;
         
-        // Can't flip if already flipped, matched, or game completed
-        if (card.isFlipped || card.isMatched || this.gameCompleted) {
-            return;
-        }
-        
-        // Start timer on first move
-        if (!this.gameStarted) {
-            this.gameStarted = true;
-            this.startTime = Date.now();
-            this.startTimer();
-        }
-        
-        // Can't flip more than 2 cards at once
-        if (this.flippedCards.length >= 2) {
-            return;
-        }
-        
-        // Flip the card
-        console.log('Flipping card:', cardId, 'Symbol:', card.symbol);
-        card.isFlipped = true;
-        cardElement.classList.add('flipped');
-        this.flippedCards.push(card);
-        console.log('Card flipped. Classes:', cardElement.className);
+        // Update display immediately
+        this.updateCardDisplay(index);
         
         // Check for match when 2 cards are flipped
-        if (this.flippedCards.length === 2) {
-            this.moves++;
-            this.updateMoves();
+        if (newFlipped.length === 2) {
+            this.attempts++;
+            this.updateAttempts();
             
-            // Clear any existing timeout
-            if (this.matchCheckTimeout) {
-                clearTimeout(this.matchCheckTimeout);
+            const [first, second] = newFlipped;
+            
+            if (this.cards[first] === this.cards[second]) {
+                // Match found!
+                this.matched = [...this.matched, first, second];
+                this.flipped = [];
+                
+                // Check for win
+                if (this.matched.length === this.cards.length) {
+                    setTimeout(() => this.render(), 100);
+                }
+            } else {
+                // No match - flip back after delay
+                setTimeout(() => {
+                    this.flipped = [];
+                    this.updateCardDisplay(first);
+                    this.updateCardDisplay(second);
+                }, 750);
             }
-            
-            // Store timeout ID for cleanup
-            this.matchCheckTimeout = setTimeout(() => {
-                this.checkForMatch();
-                this.matchCheckTimeout = null;
-            }, 1000);
         }
     }
     
-    checkForMatch() {
-        // Ensure we have exactly 2 flipped cards
-        if (this.flippedCards.length !== 2) {
-            console.warn('checkForMatch called without exactly 2 flipped cards');
-            this.flippedCards = [];
-            return;
-        }
-        
-        const [card1, card2] = this.flippedCards;
-        
-        // Ensure both cards exist and have symbols
-        if (!card1 || !card2 || !card1.symbol || !card2.symbol) {
-            console.error('Invalid cards in flippedCards array');
-            this.flippedCards = [];
-            return;
-        }
-        
-        if (card1.symbol === card2.symbol) {
-            // Match found
-            card1.isMatched = true;
-            card2.isMatched = true;
+    updateCardDisplay(index) {
+        const button = this.container.querySelector(`[data-index="${index}"]`);
+        if (button) {
+            const shouldShow = this.flipped.includes(index) || this.matched.includes(index);
+            button.textContent = shouldShow ? this.cards[index] : '❓';
             
-            const card1Element = this.container.querySelector(`[data-id="${card1.id}"]`);
-            const card2Element = this.container.querySelector(`[data-id="${card2.id}"]`);
-            
-            card1Element.classList.add('matched');
-            card2Element.classList.add('matched');
-            
-            this.matchedPairs++;
-            this.updatePairs();
-            
-            // Check if game is completed
-            if (this.matchedPairs === this.symbols.length) {
-                this.gameCompleted = true;
-                this.gameWon();
+            // Add visual feedback
+            if (this.matched.includes(index)) {
+                button.classList.add('matched');
+            } else {
+                button.classList.remove('matched');
             }
-        } else {
-            // No match, flip cards back
-            card1.isFlipped = false;
-            card2.isFlipped = false;
-            
-            const card1Element = this.container.querySelector(`[data-id="${card1.id}"]`);
-            const card2Element = this.container.querySelector(`[data-id="${card2.id}"]`);
-            
-            card1Element.classList.remove('flipped');
-            card2Element.classList.remove('flipped');
         }
-        
-        this.flippedCards = [];
+    }
+    
+    updateAttempts() {
+        const attemptsSpan = this.container.querySelector('#attempts');
+        if (attemptsSpan) {
+            attemptsSpan.textContent = this.attempts;
+        }
+    }
+    
+    handleReset() {
+        this.cards = this.shuffle([...this.initialCards]);
+        this.flipped = [];
+        this.matched = [];
+        this.attempts = 0;
+        this.render();
+        this.attachEventListeners();
     }
     
     showHint() {
-        if (this.gameCompleted) return;
-        
         // Find two unmatched cards with the same symbol
-        const unmatchedCards = this.cards.filter(card => !card.isMatched && !card.isFlipped);
+        const unmatched = [];
+        for (let i = 0; i < this.cards.length; i++) {
+            if (!this.matched.includes(i) && !this.flipped.includes(i)) {
+                unmatched.push(i);
+            }
+        }
         
-        for (let i = 0; i < unmatchedCards.length; i++) {
-            for (let j = i + 1; j < unmatchedCards.length; j++) {
-                if (unmatchedCards[i].symbol === unmatchedCards[j].symbol) {
-                    // Briefly highlight the matching pair
-                    const card1Element = this.container.querySelector(`[data-id="${unmatchedCards[i].id}"]`);
-                    const card2Element = this.container.querySelector(`[data-id="${unmatchedCards[j].id}"]`);
+        // Find a matching pair
+        for (let i = 0; i < unmatched.length; i++) {
+            for (let j = i + 1; j < unmatched.length; j++) {
+                if (this.cards[unmatched[i]] === this.cards[unmatched[j]]) {
+                    // Highlight the pair briefly
+                    const btn1 = this.container.querySelector(`[data-index="${unmatched[i]}"]`);
+                    const btn2 = this.container.querySelector(`[data-index="${unmatched[j]}"]`);
                     
-                    card1Element.classList.add('hint');
-                    card2Element.classList.add('hint');
-                    
-                    setTimeout(() => {
-                        card1Element.classList.remove('hint');
-                        card2Element.classList.remove('hint');
-                    }, 1500);
-                    
+                    if (btn1 && btn2) {
+                        btn1.classList.add('hint-highlight');
+                        btn2.classList.add('hint-highlight');
+                        
+                        setTimeout(() => {
+                            btn1.classList.remove('hint-highlight');
+                            btn2.classList.remove('hint-highlight');
+                        }, 1500);
+                    }
                     return;
                 }
             }
         }
     }
     
-    startTimer() {
-        this.timerInterval = setInterval(() => {
-            if (!this.gameCompleted) {
-                const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-                const seconds = (elapsed % 60).toString().padStart(2, '0');
-                
-                const timerElement = this.container.querySelector('#timer');
-                if (timerElement) {
-                    timerElement.textContent = `${minutes}:${seconds}`;
-                }
-            }
-        }, 1000);
-    }
-    
-    updateMoves() {
-        const movesElement = this.container.querySelector('#moves');
-        if (movesElement) {
-            movesElement.textContent = this.moves;
-        }
-    }
-    
-    updatePairs() {
-        const pairsElement = this.container.querySelector('#pairs');
-        if (pairsElement) {
-            pairsElement.textContent = `${this.matchedPairs}/${this.symbols.length}`;
-        }
-    }
-    
-    gameWon() {
-        clearInterval(this.timerInterval);
-        
-        const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-        const minutes = Math.floor(elapsed / 60);
-        const seconds = elapsed % 60;
-        
-        setTimeout(() => {
-            alert(`🎉 Congratulations! You won!\n\nMoves: ${this.moves}\nTime: ${minutes}:${seconds.toString().padStart(2, '0')}`);
-        }, 500);
-    }
-    
-    newGame() {
-        // Clear any pending timeouts that might call checkForMatch
-        if (this.matchCheckTimeout) {
-            clearTimeout(this.matchCheckTimeout);
-            this.matchCheckTimeout = null;
-        }
-        
-        // Reset game state
-        this.flippedCards = [];
-        this.matchedPairs = 0;
-        this.moves = 0;
-        this.gameStarted = false;
-        this.gameCompleted = false;
-        this.startTime = null;
-        
-        if (this.timerInterval) {
-            clearInterval(this.timerInterval);
-            this.timerInterval = null;
-        }
-        
-        // Setup new cards and render
-        this.setupCards();
-        this.render();
-        // Don't call attachEventListeners again - they're already attached
-    }
-    
     destroy() {
-        // Clean up timers
-        if (this.timerInterval) {
-            clearInterval(this.timerInterval);
-            this.timerInterval = null;
-        }
-        if (this.matchCheckTimeout) {
-            clearTimeout(this.matchCheckTimeout);
-            this.matchCheckTimeout = null;
-        }
-        
-        // Reset game state
-        this.flippedCards = [];
-        this.gameStarted = false;
-        this.gameCompleted = false;
-        
-        // Clear container
         if (this.container) {
             this.container.innerHTML = '';
         }
