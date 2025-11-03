@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Play fun mini-games - Tic Tac Toe, Snake, Memory Game and more!">
+    <meta name="keywords" content="games, mini-games, tic tac toe, snake, memory game, browser games">
+    <meta name="author" content="Game Hub Team">
+    <title>Mini Games - Game Hub</title>
+    
+    <!-- Performance optimizations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="css/styles.css" as="style">
+    <link rel="preload" href="css/games.css" as="style">
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/games.css">
+</head>
+<body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <a href="index.html" style="color: inherit; text-decoration: none;">Game Hub</a>
+            </h1>
+            <nav class="nav" role="navigation" aria-label="Main navigation">
+                <ul class="nav-list" role="menubar">
+                    <li role="none">
+                        <a href="index.html" role="menuitem">Home</a>
+                    </li>
+                    <li role="none">
+                        <a href="games.html" role="menuitem" aria-current="page">Mini Games</a>
+                    </li>
+                    <li role="none">
+                        <a href="#about" role="menuitem">About</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main" id="main-content">
+        <div class="container">
+            <section class="hero">
+                <h2>Mini Games Collection</h2>
+                <p>Play classic games right in your browser - no downloads required!</p>
+            </section>
+            
+            <!-- Game Selection -->
+            <section class="game-selection" aria-label="Game selection">
+                <div class="game-tabs" role="tablist">
+                    <button class="tab-btn active" 
+                            role="tab" 
+                            aria-selected="true" 
+                            aria-controls="tic-tac-toe-panel"
+                            id="tic-tac-toe-tab"
+                            data-game="tic-tac-toe">
+                        🎯 Tic Tac Toe
+                    </button>
+                    <button class="tab-btn" 
+                            role="tab" 
+                            aria-selected="false" 
+                            aria-controls="snake-panel"
+                            id="snake-tab"
+                            data-game="snake">
+                        🐍 Snake
+                    </button>
+                    <button class="tab-btn" 
+                            role="tab" 
+                            aria-selected="false" 
+                            aria-controls="memory-panel"
+                            id="memory-tab"
+                            data-game="memory">
+                        🧠 Memory Game
+                    </button>
+                    <button class="tab-btn" 
+                            role="tab" 
+                            aria-selected="false" 
+                            aria-controls="rps-panel"
+                            id="rps-tab"
+                            data-game="rps">
+                        ✂️ Rock Paper Scissors
+                    </button>
+                    <button class="tab-btn" 
+                            role="tab" 
+                            aria-selected="false" 
+                            aria-controls="guess-panel"
+                            id="guess-tab"
+                            data-game="guess">
+                        🎯 Guess Number
+                    </button>
+                    <button class="tab-btn" 
+                            role="tab" 
+                            aria-selected="false" 
+                            aria-controls="sudoku-panel"
+                            id="sudoku-tab"
+                            data-game="sudoku">
+                        🧩 Sudoku 4×4
+                    </button>
+                    <button class="tab-btn" 
+                            role="tab" 
+                            aria-selected="false" 
+                            aria-controls="typing-panel"
+                            id="typing-tab"
+                            data-game="typing">
+                        ⌨️ Typing Test
+                    </button>
+                </div>
+                
+                <!-- Game Panels -->
+                <div class="game-panels">
+                    <!-- Tic Tac Toe Panel -->
+                    <div class="game-panel active" 
+                         role="tabpanel" 
+                         aria-labelledby="tic-tac-toe-tab"
+                         id="tic-tac-toe-panel">
+                        <div class="game-container">
+                            <div id="tic-tac-toe-game"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Snake Panel -->
+                    <div class="game-panel" 
+                         role="tabpanel" 
+                         aria-labelledby="snake-tab"
+                         id="snake-panel">
+                        <div class="game-container">
+                            <div id="snake-game"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Memory Game Panel -->
+                    <div class="game-panel" 
+                         role="tabpanel" 
+                         aria-labelledby="memory-tab"
+                         id="memory-panel">
+                        <div class="game-container">
+                            <div id="memory-game"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rock Paper Scissors Panel -->
+                    <div class="game-panel" 
+                         role="tabpanel" 
+                         aria-labelledby="rps-tab"
+                         id="rps-panel">
+                        <div class="game-container">
+                            <div id="rps-game"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Guess Number Panel -->
+                    <div class="game-panel" 
+                         role="tabpanel" 
+                         aria-labelledby="guess-tab"
+                         id="guess-panel">
+                        <div class="game-container">
+                            <div id="guess-game"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sudoku Panel -->
+                    <div class="game-panel" 
+                         role="tabpanel" 
+                         aria-labelledby="sudoku-tab"
+                         id="sudoku-panel">
+                        <div class="game-container">
+                            <div id="sudoku-game"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Typing Test Panel -->
+                    <div class="game-panel" 
+                         role="tabpanel" 
+                         aria-labelledby="typing-tab"
+                         id="typing-panel">
+                        <div class="game-container">
+                            <div id="typing-game"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Game Instructions -->
+            <section class="game-info" aria-label="Game information">
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>🎯 Tic Tac Toe</h3>
+                        <p>Classic strategy game for two players. Get three in a row to win!</p>
+                        <ul>
+                            <li>Click on empty squares to place your mark</li>
+                            <li>First to get 3 in a row wins</li>
+                            <li>Play against a friend locally</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>🐍 Snake</h3>
+                        <p>Guide the snake to eat food and grow longer without hitting walls or yourself!</p>
+                        <ul>
+                            <li>Use arrow keys or WASD to move</li>
+                            <li>Eat red food to grow and score points</li>
+                            <li>Avoid hitting walls or your own tail</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>🧠 Memory Game</h3>
+                        <p>Test your memory by matching pairs of cards in the fewest moves!</p>
+                        <ul>
+                            <li>Click cards to flip them over</li>
+                            <li>Match pairs of identical symbols</li>
+                            <li>Complete in minimum moves and time</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>✂️ Rock Paper Scissors</h3>
+                        <p>Classic game of strategy and luck against the computer!</p>
+                        <ul>
+                            <li>Choose Rock, Paper, or Scissors</li>
+                            <li>Beat the computer to score points</li>
+                            <li>Rock beats Scissors, Paper beats Rock, Scissors beats Paper</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>🎯 Guess the Number</h3>
+                        <p>Can you guess the secret number in 10 attempts or less?</p>
+                        <ul>
+                            <li>Guess a number between 1 and 100</li>
+                            <li>Get hints if your guess is too high or low</li>
+                            <li>Try to find it in the fewest attempts</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>🧩 Sudoku 4×4</h3>
+                        <p>Solve the puzzle by filling the grid with numbers 1-4!</p>
+                        <ul>
+                            <li>Each row must contain numbers 1-4</li>
+                            <li>Each column must contain numbers 1-4</li>
+                            <li>Each 2×2 box must contain numbers 1-4</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>⌨️ Typing Speed Test</h3>
+                        <p>Test and improve your typing speed and accuracy!</p>
+                        <ul>
+                            <li>Type the given text as fast as possible</li>
+                            <li>Track your WPM (Words Per Minute)</li>
+                            <li>Maintain accuracy while increasing speed</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-support">
+                <p>Enjoying our games? Support our work:</p>
+                <a href="https://paypal.me/DonateToJordan?locale.x=en_US&country.x=MY" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="footer-donate-btn"
+                   aria-label="Support us via PayPal">
+                    💝 Support via PayPal
+                </a>
+            </div>
+            <p>&copy; 2025 Game Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Load game scripts -->
+    <script src="js/games/tic-tac-toe.js"></script>
+    <script src="js/games/snake.js"></script>
+    <script src="js/games/memory-game.js"></script>
+    <script src="js/games/rock-paper-scissors.js"></script>
+    <script src="js/games/guess-number.js"></script>
+    <script src="js/games/sudoku-4x4.js"></script>
+    <script src="js/games/typing-speed-test.js"></script>
+    
+    <!-- Main games page script -->
+    <script>
+        class GamesPage {
+            constructor() {
+                this.currentGame = null;
+                this.games = {};
+                this.init();
+            }
+            
+            init() {
+                this.setupTabs();
+                this.initializeGames();
+                this.setupAccessibility();
+                this.handleInitialHash();
+            }
+            
+            setupTabs() {
+                const tabButtons = document.querySelectorAll('.tab-btn');
+                
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        this.switchTab(e.target.dataset.game);
+                    });
+                    
+                    button.addEventListener('keydown', (e) => {
+                        this.handleTabKeydown(e);
+                    });
+                });
+            }
+            
+            switchTab(gameType) {
+                // Update tab buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.setAttribute('aria-selected', 'false');
+                });
+                
+                document.querySelectorAll('.game-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                
+                // Activate selected tab and panel
+                const activeTab = document.querySelector(`[data-game="${gameType}"]`);
+                const activePanel = document.getElementById(`${gameType}-panel`);
+                
+                if (activeTab && activePanel) {
+                    activeTab.classList.add('active');
+                    activeTab.setAttribute('aria-selected', 'true');
+                    activePanel.classList.add('active');
+                    
+                    // Focus management
+                    activePanel.focus();
+                }
+                
+                // Track game selection in analytics
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'game_select', {
+                        'game_name': gameType,
+                        'event_category': 'mini_games'
+                    });
+                }
+            }
+            
+            handleTabKeydown(event) {
+                const tabs = Array.from(document.querySelectorAll('.tab-btn'));
+                const currentIndex = tabs.indexOf(event.target);
+                
+                switch (event.key) {
+                    case 'ArrowLeft':
+                        event.preventDefault();
+                        const prevIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1;
+                        tabs[prevIndex].focus();
+                        break;
+                    case 'ArrowRight':
+                        event.preventDefault();
+                        const nextIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0;
+                        tabs[nextIndex].focus();
+                        break;
+                    case 'Home':
+                        event.preventDefault();
+                        tabs[0].focus();
+                        break;
+                    case 'End':
+                        event.preventDefault();
+                        tabs[tabs.length - 1].focus();
+                        break;
+                }
+            }
+            
+            initializeGames() {
+                // Initialize Tic Tac Toe
+                this.games.ticTacToe = new TicTacToe('tic-tac-toe-game');
+                
+                // Initialize Snake (but don't start it yet)
+                this.games.snake = new SnakeGame('snake-game');
+                
+                // Initialize Memory Game
+                this.games.memory = new MemoryGame('memory-game');
+                
+                // Initialize Rock Paper Scissors
+                this.games.rps = new RockPaperScissors('rps-game');
+                
+                // Initialize Guess Number
+                this.games.guess = new GuessNumber('guess-game');
+                
+                // Initialize Sudoku 4x4
+                this.games.sudoku = new Sudoku4x4('sudoku-game');
+                
+                // Initialize Typing Speed Test
+                this.games.typing = new TypingSpeedTest('typing-game');
+            }
+            
+            setupAccessibility() {
+                // Add skip links for games
+                const gameContainers = document.querySelectorAll('.game-container');
+                gameContainers.forEach((container, index) => {
+                    container.setAttribute('tabindex', '-1');
+                });
+                
+                // Announce game changes to screen readers
+                const liveRegion = document.createElement('div');
+                liveRegion.setAttribute('aria-live', 'polite');
+                liveRegion.setAttribute('aria-atomic', 'true');
+                liveRegion.className = 'sr-only';
+                liveRegion.id = 'game-announcements';
+                document.body.appendChild(liveRegion);
+            }
+            
+            handleInitialHash() {
+                // Check if there's a hash in the URL to switch to a specific game
+                const hash = window.location.hash.slice(1); // Remove the #
+                const validGames = ['tic-tac-toe', 'snake', 'memory', 'rps', 'guess', 'sudoku', 'typing'];
+                if (hash && validGames.includes(hash)) {
+                    this.switchTab(hash);
+                }
+            }
+            
+            announceGameChange(gameName) {
+                const liveRegion = document.getElementById('game-announcements');
+                if (liveRegion) {
+                    liveRegion.textContent = `Now playing ${gameName}`;
+                }
+            }
+        }
+        
+        // Initialize games page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new GamesPage();
+        });
+    </script>
+    
+    <style>
+        /* Tab Styles */
+        .game-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab-btn:hover {
+            color: #007bff;
+            background: #f8f9fa;
+        }
+        
+        .tab-btn.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+        
+        .tab-btn:focus {
+            outline: 2px solid #007bff;
+            outline-offset: 2px;
+        }
+        
+        .game-panels {
+            min-height: 600px;
+        }
+        
+        .game-panel {
+            display: none;
+        }
+        
+        .game-panel.active {
+            display: block;
+        }
+        
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .info-card h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .info-card ul {
+            margin-top: 1rem;
+            padding-left: 1.5rem;
+        }
+        
+        .info-card li {
+            margin: 0.5rem 0;
+            color: #495057;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .game-tabs {
+                flex-direction: column;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+            
+            .tab-btn {
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid #e9ecef;
+                border-right: 3px solid transparent;
+                white-space: nowrap;
+                font-size: 0.9rem;
+            }
+            
+            .tab-btn.active {
+                border-bottom-color: #e9ecef;
+                border-right-color: #007bff;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .info-card {
+                padding: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .tab-btn {
+                font-size: 0.8rem;
+                padding: 0.6rem 0.8rem;
+            }
+        }
+    </style>
+</body>
+</html>
