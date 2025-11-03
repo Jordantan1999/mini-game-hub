@@ -1,34 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Game Hub - Discover Amazing Games">
-    <meta name="keywords" content="games, reviews, gaming, indie games">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#007bff">
+    <meta name="description" content="Game Hub - Play Amazing Mini Games">
+    <meta name="keywords" content="games, mini games, browser games, online games">
     <meta name="author" content="Game Hub Team">
-    <title>Game Hub - Latest Game Reviews & Recommendations</title>
-    
+    <title>Game Hub - Play Mini Games Online</title>
+
     <!-- Performance optimizations -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
-    
+
     <!-- Preload critical resources -->
     <link rel="preload" href="css/styles.css" as="style">
     <link rel="preload" href="js/main.js" as="script">
     <link rel="preload" href="data/games.json" as="fetch" crossorigin="anonymous">
-    
+
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', 'G-XXXXXXXXXX');
     </script>
-    
+
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/home.css">
 </head>
+
 <body>
     <header class="header">
         <div class="container">
@@ -36,10 +43,7 @@
             <nav class="nav" role="navigation" aria-label="Main navigation">
                 <ul class="nav-list" role="menubar">
                     <li role="none">
-                        <a href="#home" role="menuitem" aria-current="page">Home</a>
-                    </li>
-                    <li role="none">
-                        <a href="games.html" role="menuitem">Mini Games</a>
+                        <a href="index.html" role="menuitem" aria-current="page">Home</a>
                     </li>
                     <li role="none">
                         <a href="#about" role="menuitem">About</a>
@@ -52,81 +56,31 @@
     <main class="main" id="main-content">
         <div class="container">
             <section class="hero">
-                <h2>Discover Amazing Games</h2>
-                <p>Your ultimate destination for game reviews and recommendations</p>
+                <h2>Play Mini Games</h2>
+                <p>Choose a game and start playing instantly!</p>
             </section>
-            
-            <div class="search-container" role="search" aria-label="Search games">
-                <div class="search-input-wrapper">
-                    <input type="search" 
-                           id="search-input" 
-                           class="search-input" 
-                           placeholder="Search games..." 
-                           aria-label="Search games by title or keyword"
-                           autocomplete="off"
-                           spellcheck="false">
+
+            <!-- Game Tiles Grid -->
+            <section class="games-grid-section" aria-label="Available games">
+                <div class="games-grid" id="games-grid">
+                    <!-- Game tiles will be inserted here -->
                 </div>
-            </div>
-            
-            <div class="main-content">
-                <section class="content-area" aria-label="Game content">
-                    <div class="game-grid grid" 
-                         id="game-grid" 
-                         role="region" 
-                         aria-label="Game listings"
-                         aria-live="polite">
-                        <!-- Game cards will be dynamically inserted here -->
-                        <div class="loading" id="loading-state" role="status" aria-live="polite">
-                            <p>Loading games...</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Game detail view container (hidden by default) -->
-                    <div class="game-detail-container" 
-                         id="game-detail" 
-                         role="region" 
-                         aria-label="Game details" 
-                         style="display: none;">
-                        <!-- Game detail content will be dynamically inserted here -->
-                    </div>
-                </section>
-                
-                <aside class="sidebar desktop-only" role="complementary" aria-label="Sidebar with filters and popular games">
-                    <div class="sidebar-section">
-                        <h3 id="popular-games-heading">Popular Games</h3>
-                        <div id="popular-games" 
-                             role="region" 
-                             aria-labelledby="popular-games-heading">
-                            <!-- Popular games will be inserted here -->
-                        </div>
-                    </div>
-                    
-                    <div class="sidebar-section">
-                        <h3 id="genre-filter-heading">Filter by Genre</h3>
-                        <div id="genre-filters" 
-                             role="region" 
-                             aria-labelledby="genre-filter-heading">
-                            <!-- Genre filters will be inserted here -->
-                        </div>
-                    </div>
-                    
-                    <div class="sidebar-section">
-                        <h3 id="support-heading">Support Game Hub</h3>
-                        <div class="support-container" 
-                             id="support-section" 
-                             role="complementary" 
-                             aria-labelledby="support-heading">
-                            <p>Enjoying Game Hub? Support our work!</p>
-                            <a href="https://paypal.me/DonateToJordan?locale.x=en_US&country.x=MY" 
-                               target="_blank" 
-                               rel="noopener noreferrer" 
-                               class="donate-btn"
-                               aria-label="Donate via PayPal">
-                                💝 Donate via PayPal
-                            </a>
-                        </div>
-                    </div>
-                </aside>
+            </section>
+
+            <!-- Fullscreen Game Container -->
+            <div class="fullscreen-game-container" id="fullscreen-game" style="display: none;">
+                <div class="game-header-bar">
+                    <button class="back-btn" id="back-btn" aria-label="Back to games">
+                        ← Back
+                    </button>
+                    <h3 class="current-game-title" id="current-game-title"></h3>
+                    <button class="fullscreen-btn" id="fullscreen-btn" aria-label="Toggle fullscreen">
+                        ⛶
+                    </button>
+                </div>
+                <div class="game-content-area" id="game-content-area">
+                    <!-- Active game will be rendered here -->
+                </div>
             </div>
         </div>
     </main>
@@ -134,12 +88,9 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-support">
-                <p>Like what we do? Consider supporting us:</p>
-                <a href="https://paypal.me/DonateToJordan?locale.x=en_US&country.x=MY" 
-                   target="_blank" 
-                   rel="noopener noreferrer" 
-                   class="footer-donate-btn"
-                   aria-label="Support us via PayPal">
+                <p>Enjoying our games? Support us:</p>
+                <a href="https://paypal.me/DonateToJordan?locale.x=en_US&country.x=MY" target="_blank"
+                    rel="noopener noreferrer" class="footer-donate-btn" aria-label="Support us via PayPal">
                     💝 Support via PayPal
                 </a>
             </div>
@@ -147,18 +98,17 @@
         </div>
     </footer>
 
-    <!-- Load configuration first, then components, then main script -->
-    <script src="js/utils/placeholder-generator.js"></script>
-    <script src="js/components/LazyLoadManager.js"></script>
-    <script src="js/components/AccessibilityManager.js"></script>
-    <script src="js/components/PerformanceOptimizer.js"></script>
-    <script src="js/components/GameDataManager.js"></script>
-    <script src="js/components/GameListView.js"></script>
-    <script src="js/components/GameDetailView.js"></script>
-    <script src="js/components/SearchFilter.js"></script>
-    <script src="js/components/SEOManager.js"></script>
-    <script src="js/components/AnalyticsManager.js"></script>
-    <script src="js/components/SitemapGenerator.js"></script>
-    <script src="js/main.js"></script>
+    <!-- Load game scripts -->
+    <script src="js/games/tic-tac-toe.js"></script>
+    <script src="js/games/snake.js"></script>
+    <script src="js/games/memory-game.js"></script>
+    <script src="js/games/rock-paper-scissors.js"></script>
+    <script src="js/games/guess-number.js"></script>
+    <script src="js/games/sudoku-4x4.js"></script>
+    <script src="js/games/typing-speed-test.js"></script>
+
+    <!-- Main home page script -->
+    <script src="js/home.js"></script>
 </body>
+
 </html>
