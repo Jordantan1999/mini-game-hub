@@ -136,21 +136,89 @@ class TypingSpeedTest {
     }
     
     renderResults() {
+        const timeUsed = 60 - this.timeLeft;
+        const completionRate = Math.round((this.input.length / this.text.length) * 100);
+        
+        let performanceLevel = '';
+        let performanceColor = '';
+        
+        if (this.wpm >= 60 && this.accuracy >= 95) {
+            performanceLevel = '🏆 Expert Level';
+            performanceColor = '#28a745';
+        } else if (this.wpm >= 40 && this.accuracy >= 90) {
+            performanceLevel = '🥇 Advanced';
+            performanceColor = '#007bff';
+        } else if (this.wpm >= 25 && this.accuracy >= 85) {
+            performanceLevel = '🥈 Intermediate';
+            performanceColor = '#ffc107';
+        } else {
+            performanceLevel = '🥉 Beginner';
+            performanceColor = '#6c757d';
+        }
+        
         return `
             <div class="results-container">
-                <h4>🎉 Test Complete!</h4>
-                <div class="final-stats">
-                    <div class="final-stat">
-                        <strong>Speed:</strong> ${this.wpm} WPM
+                <div class="results-header">
+                    <h3>🎉 Test Complete!</h3>
+                    <div class="performance-badge" style="color: ${performanceColor}; border-color: ${performanceColor};">
+                        ${performanceLevel}
                     </div>
-                    <div class="final-stat">
-                        <strong>Characters:</strong> ${this.cpm} CPM
+                </div>
+                
+                <div class="final-stats-grid">
+                    <div class="final-stat-card">
+                        <div class="stat-number">${this.wpm}</div>
+                        <div class="stat-label">Words Per Minute</div>
                     </div>
-                    <div class="final-stat">
-                        <strong>Accuracy:</strong> ${this.accuracy}%
+                    <div class="final-stat-card">
+                        <div class="stat-number">${this.cpm}</div>
+                        <div class="stat-label">Characters Per Minute</div>
                     </div>
-                    <div class="final-stat">
-                        <strong>Time:</strong> ${60 - this.timeLeft}s
+                    <div class="final-stat-card">
+                        <div class="stat-number">${this.accuracy}%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                    <div class="final-stat-card">
+                        <div class="stat-number">${timeUsed}s</div>
+                        <div class="stat-label">Time Used</div>
+                    </div>
+                    <div class="final-stat-card">
+                        <div class="stat-number">${completionRate}%</div>
+                        <div class="stat-label">Text Completed</div>
+                    </div>
+                    <div class="final-stat-card">
+                        <div class="stat-number">${this.input.length}</div>
+                        <div class="stat-label">Characters Typed</div>
+                    </div>
+                </div>
+                
+                <div class="performance-feedback">
+                    <h4>📊 Performance Analysis</h4>
+                    <p><strong>Overall:</strong> ${this.feedback}</p>
+                    ${this.accuracy < 95 ? '<p><strong>Tip:</strong> Focus on accuracy - it\'s better to type slower but more accurately!</p>' : ''}
+                    ${this.wpm < 40 ? '<p><strong>Tip:</strong> Practice regularly to improve your typing speed. Try typing for 10-15 minutes daily.</p>' : ''}
+                    ${completionRate < 100 ? '<p><strong>Note:</strong> You didn\'t complete the full text. Try to finish the entire passage next time!</p>' : '<p><strong>Great!</strong> You completed the entire text passage!</p>'}
+                </div>
+                
+                <div class="typing-goals">
+                    <h4>🎯 Typing Speed Goals</h4>
+                    <div class="goals-list">
+                        <div class="goal-item ${this.wpm >= 20 ? 'achieved' : ''}">
+                            <span class="goal-speed">20 WPM</span>
+                            <span class="goal-desc">Basic Typing</span>
+                        </div>
+                        <div class="goal-item ${this.wpm >= 40 ? 'achieved' : ''}">
+                            <span class="goal-speed">40 WPM</span>
+                            <span class="goal-desc">Good Typing</span>
+                        </div>
+                        <div class="goal-item ${this.wpm >= 60 ? 'achieved' : ''}">
+                            <span class="goal-speed">60 WPM</span>
+                            <span class="goal-desc">Fast Typing</span>
+                        </div>
+                        <div class="goal-item ${this.wpm >= 80 ? 'achieved' : ''}">
+                            <span class="goal-speed">80 WPM</span>
+                            <span class="goal-desc">Expert Level</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -184,6 +252,11 @@ class TypingSpeedTest {
         this.input = event.target.value;
         this.calculateStats();
         this.updateDisplay();
+        
+        // Check if user has completed the text
+        if (this.input.length >= this.text.length) {
+            this.finishTest();
+        }
     }
     
     startTest() {
