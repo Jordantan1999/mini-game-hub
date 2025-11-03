@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Filter Component Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 3px;
+        }
+        .test-pass {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-controls {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        #search-input {
+            width: 300px;
+            padding: 8px;
+            margin: 5px;
+        }
+        #genre-filters {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search Filter Component Tests</h1>
+    
+    <div class="test-controls">
+        <h3>Test Controls</h3>
+        <input type="search" id="search-input" placeholder="Test search functionality...">
+        <div id="genre-filters"></div>
+        <div id="test-results"></div>
+    </div>
+
+    <div id="test-output"></div>
+
+    <!-- Load required components -->
+    <script src="../js/components/GameDataManager.js"></script>
+    <script src="../js/components/SearchFilter.js"></script>
+
+    <script>
+        // Test runner
+        class SearchFilterTestRunner {
+            constructor() {
+                this.tests = [];
+                this.results = [];
+                this.dataManager = null;
+                this.searchFilter = null;
+            }
+
+            async runTests() {
+                console.log('🚀 Starting SearchFilter component tests...');
+                
+                try {
+                    // Initialize components
+                    await this.setupComponents();
+                    
+                    // Run tests
+                    await this.testComponentInitialization();
+                    await this.testSearchFunctionality();
+                    await this.testGenreFiltering();
+                    await this.testDebouncing();
+                    await this.testFilterCombination();
+                    
+                    // Display results
+                    this.displayResults();
+                    
+                } catch (error) {
+                    console.error('Test setup failed:', error);
+                    this.addResult('Setup', false, `Test setup failed: ${error.message}`);
+                    this.displayResults();
+                }
+            }
+
+            async setupComponents() {
+                this.dataManager = new GameDataManager();
+                await this.dataManager.loadGames();
+                
+                this.searchFilter = new SearchFilter('search-input', 'genre-filters', this.dataManager);
+                
+                // Wait for initialization
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            async testComponentInitialization() {
+                console.log('🧪 Testing component initialization...');
+                
+                try {
+                    // Test that components are created
+                    this.addResult('Component Creation', 
+                        this.searchFilter !== null, 
+                        'SearchFilter component should be created');
+                    
+                    // Test that search input exists
+                    const searchInput = document.getElementById('search-input');
+                    this.addResult('Search Input', 
+                        searchInput !== null, 
+                        'Search input element should exist');
+                    
+                    // Test that genre filter is populated
+                    const genreSelect = document.getElementById('genre-select');
+                    this.addResult('Genre Filter', 
+                        genreSelect !== null && genreSelect.options.length > 1, 
+                        'Genre filter should be populated with options');
+                    
+                } catch (error) {
+                    this.addResult('Component Initialization', false, `Error: ${error.message}`);
+                }
+            }
+
+            async testSearchFunctionality() {
+                console.log('🔍 Testing search functionality...');
+                
+                try {
+                    // Test search scoring
+                    const games = await this.dataManager.loadGames();
+                    const searchResults = await this.dataManager.searchGames('cyberpunk');
+                    
+                    this.addResult('Search Results', 
+                        searchResults.length > 0, 
+                        'Search should return results for "cyberpunk"');
+                    
+                    // Test that Cyberpunk 2077 is in results (should be high score)
+                    const hasCyberpunk = searchResults.some(game => 
+                        game.title.toLowerCase().includes('cyberpunk'));
+                    
+                    this.addResult('Search Relevance', 
+                        hasCyberpunk, 
+                        'Cyberpunk 2077 should be in search results for "cyberpunk"');
+                    
+                    // Test empty search
+                    const emptyResults = await this.dataManager.searchGames('');
+                    this.addResult('Empty Search', 
+                        emptyResults.length === games.length, 
+                        'Empty search should return all games');
+                    
+                } catch (error) {
+                    this.addResult('Search Functionality', false, `Error: ${error.message}`);
+                }
+            }
+
+            async testGenreFiltering() {
+                console.log('🎮 Testing genre filtering...');
+                
+                try {
+                    const games = await this.dataManager.loadGames();
+                    const rpgGames = await this.dataManager.filterByGenre('RPG');
+                    
+                    this.addResult('Genre Filter Results', 
+                        rpgGames.length > 0 && rpgGames.length < games.length, 
+                        'Genre filtering should return subset of games');
+                    
+                    // Test that all returned games have the RPG genre
+                    const allHaveRPG = rpgGames.every(game => 
+                        game.genre.some(g => g.toLowerCase() === 'rpg'));
+                    
+                    this.addResult('Genre Filter Accuracy', 
+                        allHaveRPG, 
+                        'All filtered games should have the RPG genre');
+                    
+                } catch (error) {
+                    this.addResult('Genre Filtering', false, `Error: ${error.message}`);
+                }
+            }
+
+            async testDebouncing() {
+                console.log('⏱️ Testing debouncing...');
+                
+                try {
+                    let callCount = 0;
+                    const originalCallback = this.searchFilter.onFilterCallback;
+                    
+                    // Mock the callback to count calls
+                    this.searchFilter.onFilterCallback = () => {
+                        callCount++;
+                    };
+                    
+                    // Simulate rapid typing
+                    this.searchFilter.handleSearchInput('c');
+                    this.searchFilter.handleSearchInput('cy');
+                    this.searchFilter.handleSearchInput('cyb');
+                    this.searchFilter.handleSearchInput('cybe');
+                    this.searchFilter.handleSearchInput('cyber');
+                    
+                    // Wait for debounce delay
+                    await new Promise(resolve => setTimeout(resolve, 400));
+                    
+                    this.addResult('Debouncing', 
+                        callCount === 1, 
+                        `Debouncing should result in 1 call, got ${callCount}`);
+                    
+                    // Restore original callback
+                    this.searchFilter.onFilterCallback = originalCallback;
+                    
+                } catch (error) {
+                    this.addResult('Debouncing', false, `Error: ${error.message}`);
+                }
+            }
+
+            async testFilterCombination() {
+                console.log('🔄 Testing filter combination...');
+                
+                try {
+                    // Test advanced search with multiple filters
+                    const results = await this.dataManager.advancedSearch({
+                        query: 'rpg',
+                        genre: 'RPG',
+                        minRating: 4.0
+                    });
+                    
+                    this.addResult('Combined Filters', 
+                        results.length > 0, 
+                        'Combined filters should return results');
+                    
+                    // Verify all results meet criteria
+                    const allMeetCriteria = results.every(game => 
+                        game.genre.some(g => g.toLowerCase() === 'rpg') && 
+                        game.rating >= 4.0);
+                    
+                    this.addResult('Combined Filter Accuracy', 
+                        allMeetCriteria, 
+                        'All results should meet combined filter criteria');
+                    
+                } catch (error) {
+                    this.addResult('Filter Combination', false, `Error: ${error.message}`);
+                }
+            }
+
+            addResult(testName, passed, message) {
+                this.results.push({
+                    name: testName,
+                    passed: passed,
+                    message: message
+                });
+            }
+
+            displayResults() {
+                const output = document.getElementById('test-output');
+                const passed = this.results.filter(r => r.passed).length;
+                const total = this.results.length;
+                
+                let html = `<h2>Test Results: ${passed}/${total} passed</h2>`;
+                
+                this.results.forEach(result => {
+                    const className = result.passed ? 'test-pass' : 'test-fail';
+                    const icon = result.passed ? '✅' : '❌';
+                    
+                    html += `
+                        <div class="test-result ${className}">
+                            ${icon} <strong>${result.name}</strong>: ${result.message}
+                        </div>
+                    `;
+                });
+                
+                output.innerHTML = html;
+                
+                console.log(`🎉 Tests completed: ${passed}/${total} passed`);
+            }
+        }
+
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            const testRunner = new SearchFilterTestRunner();
+            await testRunner.runTests();
+        });
+    </script>
+</body>
+</html>

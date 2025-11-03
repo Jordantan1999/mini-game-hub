@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameListView Component Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-results {
+            margin: 20px 0;
+        }
+        .test-pass {
+            color: green;
+            font-weight: bold;
+        }
+        .test-fail {
+            color: red;
+            font-weight: bold;
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .summary {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .test-container {
+            border: 2px solid #ddd;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        #test-game-grid {
+            min-height: 200px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            background: white;
+        }
+        .responsive-test {
+            border: 1px solid #007bff;
+            margin: 10px 0;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>GameListView Component Tests</h1>
+    <div id="test-results"></div>
+    
+    <div class="test-container">
+        <h3>Test Game Grid Container</h3>
+        <div id="test-game-grid"></div>
+    </div>
+    
+    <!-- Include required components -->
+    <script src="../js/components/GameDataManager.js"></script>
+    <script src="../js/components/GameListView.js"></script>
+    
+    <script>
+        // Enhanced test framework
+        class TestRunner {
+            constructor() {
+                this.tests = [];
+                this.results = [];
+            }
+
+            test(name, testFn) {
+                this.tests.push({ name, testFn });
+            }
+
+            async runAll() {
+                console.log('Running GameListView tests...');
+                
+                for (const test of this.tests) {
+                    try {
+                        await test.testFn();
+                        this.results.push({ name: test.name, passed: true, error: null });
+                        console.log(`✓ ${test.name}`);
+                    } catch (error) {
+                        this.results.push({ name: test.name, passed: false, error: error.message });
+                        console.error(`✗ ${test.name}: ${error.message}`);
+                    }
+                }
+
+                this.displayResults();
+            }
+
+            displayResults() {
+                const container = document.getElementById('test-results');
+                const passed = this.results.filter(r => r.passed).length;
+                const total = this.results.length;
+
+                let html = `<div class="summary">
+                    <h2>GameListView Test Results: ${passed}/${total} passed</h2>
+                </div>`;
+
+                this.results.forEach(result => {
+                    const status = result.passed ? 'test-pass' : 'test-fail';
+                    const icon = result.passed ? '✓' : '✗';
+                    const error = result.error ? `<br><small>Error: ${result.error}</small>` : '';
+                    
+                    html += `<div class="test-item">
+                        <span class="${status}">${icon} ${result.name}</span>
+                        ${error}
+                    </div>`;
+                });
+
+                container.innerHTML = html;
+            }
+
+            assert(condition, message) {
+                if (!condition) {
+                    throw new Error(message || 'Assertion failed');
+                }
+            }
+
+            assertEqual(actual, expected, message) {
+                if (actual !== expected) {
+                    throw new Error(message || `Expected ${expected}, got ${actual}`);
+                }
+            }
+
+            assertContains(container, selector, message) {
+                const element = container.querySelector(selector);
+                if (!element) {
+                    throw new Error(message || `Element with selector '${selector}' not found`);
+                }
+                return element;
+            }
+
+            assertElementCount(container, selector, expectedCount, message) {
+                const elements = container.querySelectorAll(selector);
+                if (elements.length !== expectedCount) {
+                    throw new Error(message || `Expected ${expectedCount} elements with selector '${selector}', found ${elements.length}`);
+                }
+            }
+        }
+
+        // Mock data for testing
+        const mockGameData = {
+            games: [
+                {
+                    id: 'test-game-1',
+                    title: 'Test Action Game',
+                    description: 'An exciting action-packed adventure game with stunning graphics.',
+                    genre: ['Action', 'Adventure'],
+                    rating: 4.5,
+                    reviewCount: 150,
+                    thumbnail: 'images/test-thumb-1.jpg',
+                    developer: 'Test Studio',
+                    releaseDate: '2023-01-15'
+                },
+                {
+                    id: 'test-game-2',
+                    title: 'Test RPG Quest',
+                    description: 'A deep role-playing game with complex storylines.',
+                    genre: ['RPG', 'Fantasy'],
+                    rating: 4.8,
+                    reviewCount: 320,
+                    thumbnail: 'images/test-thumb-2.jpg',
+                    developer: 'RPG Masters',
+                    releaseDate: '2023-03-20'
+                },
+                {
+                    id: 'test-game-3',
+                    title: 'Test Puzzle Master',
+                    description: 'Brain-teasing puzzles that will challenge your mind.',
+                    genre: ['Puzzle', 'Casual'],
+                    rating: 4.2,
+                    reviewCount: 89,
+                    thumbnail: 'images/test-thumb-3.jpg',
+                    developer: 'Puzzle Inc',
+                    releaseDate: '2023-05-10'
+                }
+            ]
+        };
+
+        // Create mock games for pagination testing (25 games total)
+        for (let i = 4; i <= 25; i++) {
+            mockGameData.games.push({
+                id: `test-game-${i}`,
+                title: `Test Game ${i}`,
+                description: `Description for test game number ${i}.`,
+                genre: ['Test'],
+                rating: 3.5 + (Math.random() * 1.5),
+                reviewCount: Math.floor(Math.random() * 200) + 50,
+                thumbnail: `images/test-thumb-${i}.jpg`,
+                developer: 'Test Developer',
+                releaseDate: '2023-06-01'
+            });
+        }
+
+        // Mock GameDataManager for testing
+        class MockGameDataManager {
+            constructor() {
+                this.games = mockGameData.games.map(data => new Game(data));
+            }
+
+            async loadGames() {
+                return this.games;
+            }
+
+            async searchGames(query) {
+                if (!query || query.trim() === '') {
+                    return this.games;
+                }
+
+                const searchTerm = query.toLowerCase().trim();
+                return this.games.filter(game => 
+                    game.title.toLowerCase().includes(searchTerm) ||
+                    game.description.toLowerCase().includes(searchTerm) ||
+                    game.genre.some(g => g.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            async filterByGenre(genre) {
+                if (!genre || genre === 'all') {
+                    return this.games;
+                }
+
+                return this.games.filter(game => 
+                    game.genre.some(g => g.toLowerCase() === genre.toLowerCase())
+                );
+            }
+        }
+
+        // Test suite
+        const runner = new TestRunner();
+
+        // Test GameListView initialization
+        runner.test('GameListView should initialize correctly', async () => {
+            const container = document.getElementById('test-game-grid');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameListView = new GameListView('test-game-grid', mockDataManager);
+            
+            runner.assert(gameListView.container === container, 'Container should be set correctly');
+            runner.assert(gameListView.dataManager === mockDataManager, 'Data manager should be set correctly');
+            runner.assertEqual(gameListView.currentPage, 1, 'Initial page should be 1');
+            runner.assertEqual(gameListView.gamesPerPage, 20, 'Games per page should be 20');
+        });
+
+        runner.test('GameListView should throw error for invalid container', () => {
+            const mockDataManager = new MockGameDataManager();
+            
+            try {
+                new GameListView('nonexistent-container', mockDataManager);
+                runner.assert(false, 'Should have thrown error for invalid container');
+            } catch (error) {
+                runner.assert(error.message.includes('not found'), 'Should mention container not found');
+            }
+        });
+
+        runner.test('GameListView should render game cards correctly', async () => {
+            const container = document.getElementById('test-game-grid');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameListView = new GameListView('test-game-grid', mockDataManager);
+            
+            // Wait for the component to finish loading and rendering
+            await new Promise(resolve => {
+                const checkForRender = () => {
+                    const gameGrid = container.querySelector('.game-grid');
+                    const gameCards = container.querySelectorAll('.game-card');
+                    if (gameGrid && gameCards.length > 0) {
+                        resolve();
+                    } else {
+                        setTimeout(checkForRender, 50);
+                    }
+                };
+                checkForRender();
+            });
+            
+            // Check if game cards are rendered
+            runner.assertContains(container, '.game-grid', 'Game grid should be present');
+            runner.assertContains(container, '.game-card', 'Game cards should be present');
+            
+            const gameCards = container.querySelectorAll('.game-card');
+            runner.assert(gameCards.length > 0, 'Should render at least one game card');
+            runner.assert(gameCards.length <= 20, 'Should not render more than 20 cards per page');
+        });
+
+        runner.test('Game cards should have correct structure and content', async () => {
+            const container = document.getElementById('test-game-grid');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameListView = new GameListView('test-game-grid', mockDataManager);
+            
+            // Wait for the component to finish loading and rendering
+            await new Promise(resolve => {
+                const checkForRender = () => {
+                    const firstCard = container.querySelector('.game-card');
+                    if (firstCard) {
+                        resolve();
+                    } else {
+                        setTimeout(checkForRender, 50);
+                    }
+                };
+                checkForRender();
+            });
+            
+            const firstCard = container.querySelector('.game-card');
+            runner.assert(firstCard, 'First game card should exist');
+            
+            // Check card structure
+            runner.assertContains(firstCard, '.card-image', 'Card should have image');
+            runner.assertContains(firstCard, '.card-title', 'Card should have title');
+            runner.assertContains(firstCard, '.card-description', 'Card should have description');
+            runner.assertContains(firstCard, '.card-meta', 'Card should have meta information');
+            runner.assertContains(firstCard, '.card-rating', 'Card should have rating');
+            runner.assertContains(firstCard, '.rating-stars', 'Card should have star rating');
+            
+            // Check content
+            const title = firstCard.querySelector('.card-title');
+            runner.assert(title.textContent.includes('Test'), 'Title should contain test data');
+            
+            const gameId = firstCard.getAttribute('data-game-id');
+            runner.assert(gameId && gameId.startsWith('test-game-'), 'Card should have game ID');
+        });
+
+        runner.test('GameListView should render pagination when needed', async () => {
+            const container = document.getElementById('test-game-grid');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameListView = new GameListView('test-game-grid', mockDataManager);
+            
+            // Wait for the component to finish loading and rendering
+            await new Promise(resolve => {
+                const checkForRender = () => {
+                    const pagination = container.querySelector('.pagination');
+                    if (pagination) {
+                        resolve();
+                    } else {
+                        setTimeout(checkForRender, 50);
+                    }
+                };
+                checkForRender();
+            });
+            
+            // With 25 games and 20 per page, should have pagination
+            const pagination = container.querySelector('.pagination');
+            runner.assert(pagination, 'Pagination should be present with more than 20 games');
+            
+            const paginationButtons = container.querySelectorAll('.pagination-btn');
+            runner.assert(paginationButtons.length > 0, 'Should have pagination buttons');
+            
+            // Check for page numbers
+            const pageButtons = Array.from(paginationButtons).filter(btn => 
+                !btn.classList.contains('pagination-prev') && 
+                !btn.classList.contains('pagination-next')
+            );
+            runner.assert(pageButtons.length >= 2, 'Should have at least 2 page buttons');
+        });
+
+        runner.test('Pagination should work correctly', async () => {
+            const container = document.getElementById('test-game-grid');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameListView = new GameListView('test-game-grid', mockDataManager);
+            
+            // Wait for the component to finish loading and rendering
+            await new Promise(resolve => {
+                const checkForRender = () => {
+                    const pagination = container.querySelector('.pagination');
+                    if (pagination) {
+                        resolve();
+                    } else {
+                        setTimeout(checkForRender, 50);
+                    }
+                };
+                checkForRender();
+            });
+            
+            // Check initial state
+            runner.assertEqual(gameListView.currentPage, 1, 'Should start on page 1');
+            
+            // Find page 2 button and click it
+            const page2Button = Array.from(container.querySelectorAll('.pagination-btn'))
+                .find(btn => btn.textContent.trim() === '2');
+            
+            if (page2Button) {
+                page2Button.click();
+                
+                // Wait for page change
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                runner.assertEqual(gameListView.currentPage, 2, 'Should be on page 2 after click');
+                
+                // Check if different games are shown
+                const gameCards = container.querySelectorAll('.game-card');
+                runner.assert(gameCards.length > 0, 'Should show games on page 2');
+                runner.assert(gameCards.length <= 20, 'Should not exceed games per page limit');
+            }
+        });
+
+        runner.test('GameListView should handle search filtering', async () => {
+            const container = document.getElementById('test-game-grid');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameListView = new GameListView('test-game-grid', mockDataManager);
+            
+            // Wait for initial load
+            await new Promise(resolve => {
+                const checkForRender = () => {
+                    const gameCards = container.querySelectorAll('.game-card');
+                    if (gameCards.length > 0) {
+                        resolve();
+                    } else {
+                        setTimeout(checkForRender, 50);
+                    }
+                };
+                checkForRender();
+            });
+            
+            // Test search functionality
+            await gameListView.filterGames('RPG');
+            
+            // Wait for filter to complete
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const gameCards = container.querySelectorAll('.game-card');
+            runner.assert(gameCards.length > 0, 'Should find RPG games');
+            
+            // Check if filtered correctly
+            const firstCard = gameCards[0];
+            const title = firstCard.querySelector('.card-title').textContent;
+            runner.assert(title.includes('RPG') || title.includes('Quest'), 'Should show RPG-related games');
+        });
+
+        runner.test('GameListView should handle empty search results', async () => {
+            const container = document.getElementById('test-game-grid');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameListView = new GameListView('test-game-grid', mockDataManager);
+            
+            // Wait for initial load
+            await new Promise(resolve => {
+                const checkForRender = () => {
+                    const gameCards = container.querySelectorAll('.game-card');
+                    if (gameCards.length > 0) {
+                        resolve();
+                    } else {
+                        setTimeout(checkForRender, 50);
+                    }
+                };
+                checkForRender();
+            });
+            
+            // Search for something that doesn't exist
+            await gameListView.filterGames('NonexistentGame');
+            
+            // Wait for empty state to render
+            await new Promise(resolve => {
+                const checkForEmpty = () => {
+                    const emptyState = container.querySelector('.empty-state');
+                    if (emptyState) {
+                        resolve();
+                    } else {
+                        setTimeout(checkForEmpty, 50);
+                    }
+                };
+                checkForEmpty();
+            });
+            
+            const emptyState = container.querySelector('.empty-state');
+            runner.assert(emptyState, 'Should show empty state for no results');
+            
+            const emptyMessage = emptyState.textContent;
+            runner.assert(emptyMessage.includes('No games found'), 'Should show appropriate empty message');
+        });
+
+        runner.test('Star rating should render correctly', async () => {
+            const container = document.getElementById('test-game-grid');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameListView = new GameListView('test-game-grid', mockDataManager);
+            
+            // Wait for initial load
+            await new Promise(resolve => {
+                const checkForRender = () => {
+                    const ratingStars = container.querySelector('.rating-stars');
+                    if (ratingStars) {
+                        resolve();
+                    } else {
+                        setTimeout(checkForRender, 50);
+                    }
+                };
+                checkForRender();
+            });
+            
+            const ratingStars = container.querySelector('.rating-stars');
+            runner.assert(ratingStars, 'Rating stars should be present');
+            
+            const stars = ratingStars.querySelectorAll('.star');
+            runner.assertEqual(stars.length, 5, 'Should have 5 stars total');
+            
+            // Check for different star types
+            const fullStars = ratingStars.querySelectorAll('.star-full');
+            const emptyStars = ratingStars.querySelectorAll('.star-empty');
+            
+            runner.assert(fullStars.length + emptyStars.length <= 5, 'Total stars should not exceed 5');
+        });
+
+        runner.test('Game cards should be accessible', async () => {
+            const container = document.getElementById('test-game-grid');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameListView = new GameListView('test-game-grid', mockDataManager);
+            
+            // Wait for initial load
+            await new Promise(resolve => {
+                const checkForRender = () => {
+                    const gameCards = container.querySelectorAll('.game-card');
+                    if (gameCards.length > 0) {
+                        resolve();
+                    } else {
+                        setTimeout(checkForRender, 50);
+                    }
+                };
+                checkForRender();
+            });
+            
+            const gameCards = container.querySelectorAll('.game-card');
+            const firstCard = gameCards[0];
+            
+            // Check accessibility attributes
+            runner.assert(firstCard.hasAttribute('tabindex'), 'Game card should be focusable');
+            runner.assert(firstCard.hasAttribute('aria-label'), 'Game card should have aria-label');
+            runner.assert(firstCard.getAttribute('role') === 'gridcell', 'Game card should have gridcell role');
+            
+            // Check image alt text
+            const cardImage = firstCard.querySelector('.card-image');
+            runner.assert(cardImage.hasAttribute('alt'), 'Card image should have alt text');
+            
+            // Check rating accessibility
+            const ratingStars = firstCard.querySelector('.rating-stars');
+            runner.assert(ratingStars.hasAttribute('aria-label'), 'Rating should have aria-label');
+        });
+
+        runner.test('GameListView should handle responsive behavior', async () => {
+            const container = document.getElementById('test-game-grid');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameListView = new GameListView('test-game-grid', mockDataManager);
+            
+            // Wait for initial load
+            await new Promise(resolve => {
+                const checkForRender = () => {
+                    const gameGrid = container.querySelector('.game-grid');
+                    if (gameGrid) {
+                        resolve();
+                    } else {
+                        setTimeout(checkForRender, 50);
+                    }
+                };
+                checkForRender();
+            });
+            
+            const gameGrid = container.querySelector('.game-grid');
+            runner.assert(gameGrid, 'Game grid should exist');
+            
+            // Check if grid class is applied (responsive grid system)
+            runner.assert(gameGrid.classList.contains('grid'), 'Should have grid class for responsive layout');
+            
+            // Check if cards have proper responsive classes
+            const gameCards = container.querySelectorAll('.game-card');
+            runner.assert(gameCards.length > 0, 'Should have game cards for responsive testing');
+        });
+
+        runner.test('URL pagination should work correctly', () => {
+            // Test URL parameter parsing
+            const currentPage = GameListView.getCurrentPageFromURL();
+            runner.assert(typeof currentPage === 'number', 'Should return a number');
+            runner.assert(currentPage >= 1, 'Page number should be at least 1');
+        });
+
+        // Run all tests when page loads
+        window.addEventListener('load', () => {
+            // Add some delay to ensure DOM is ready
+            setTimeout(() => {
+                runner.runAll();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

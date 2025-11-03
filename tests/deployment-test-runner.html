@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Test Runner - Game Hub</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-container {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .test-pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-summary {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Deployment Test Runner</h1>
+    <p>This page tests the core functionality of your game listing website after deployment to GitHub Pages.</p>
+    
+    <div class="test-container">
+        <h2>Test Controls</h2>
+        <button onclick="runTests()">Run All Tests</button>
+        <button onclick="clearResults()">Clear Results</button>
+        <button onclick="exportResults()">Export Results</button>
+    </div>
+
+    <div id="test-status" class="loading" style="display: none;">
+        Running tests... Please wait.
+    </div>
+
+    <div id="test-summary" style="display: none;"></div>
+    <div id="test-results"></div>
+
+    <div class="test-container">
+        <h2>Manual Verification Checklist</h2>
+        <p>After automated tests pass, manually verify these items:</p>
+        <ul>
+            <li>✅ Site loads correctly at your GitHub Pages URL</li>
+            <li>✅ Custom domain works (if configured)</li>
+            <li>✅ HTTPS is enabled and working</li>
+            <li>✅ All game images display correctly</li>
+            <li>✅ Search and filtering work as expected</li>
+            <li>✅ Game detail pages load properly</li>
+            <li>✅ External links open in new tabs</li>
+            <li>✅ Site is responsive on mobile devices</li>
+            <li>✅ PayPal donation links are working</li>
+            <li>✅ Google Analytics tracking is active</li>
+        </ul>
+    </div>
+
+    <div class="test-container">
+        <h2>Performance Testing</h2>
+        <p>Use these tools to verify performance:</p>
+        <ul>
+            <li><a href="https://pagespeed.web.dev/" target="_blank">Google PageSpeed Insights</a></li>
+            <li><a href="https://web.dev/measure/" target="_blank">Web.dev Measure</a></li>
+            <li><a href="https://gtmetrix.com/" target="_blank">GTmetrix</a></li>
+            <li><a href="https://tools.pingdom.com/" target="_blank">Pingdom Website Speed Test</a></li>
+        </ul>
+    </div>
+
+    <div class="test-container">
+        <h2>SEO Validation</h2>
+        <p>Validate SEO implementation:</p>
+        <ul>
+            <li><a href="https://search.google.com/test/rich-results" target="_blank">Google Rich Results Test</a></li>
+            <li><a href="https://developers.facebook.com/tools/debug/" target="_blank">Facebook Sharing Debugger</a></li>
+            <li><a href="https://cards-dev.twitter.com/validator" target="_blank">Twitter Card Validator</a></li>
+        </ul>
+    </div>
+
+    <!-- Include the main site's JavaScript for testing -->
+    <script src="../js/main.js"></script>
+    <script src="deployment-test.js"></script>
+    
+    <script>
+        let testRunner = null;
+
+        async function runTests() {
+            const statusDiv = document.getElementById('test-status');
+            const summaryDiv = document.getElementById('test-summary');
+            const resultsDiv = document.getElementById('test-results');
+            
+            // Show loading state
+            statusDiv.style.display = 'block';
+            summaryDiv.style.display = 'none';
+            resultsDiv.innerHTML = '';
+            
+            try {
+                // Create new test runner instance
+                testRunner = new DeploymentTester();
+                
+                // Override the console.log to capture output
+                const originalLog = console.log;
+                const logs = [];
+                console.log = function(...args) {
+                    logs.push(args.join(' '));
+                    originalLog.apply(console, args);
+                };
+                
+                // Run tests
+                await testRunner.runAllTests();
+                
+                // Restore console.log
+                console.log = originalLog;
+                
+                // Display results
+                displayResults(window.deploymentTestResults, logs);
+                
+            } catch (error) {
+                console.error('Test execution failed:', error);
+                resultsDiv.innerHTML = `<div class="test-fail">Test execution failed: ${error.message}</div>`;
+            } finally {
+                statusDiv.style.display = 'none';
+            }
+        }
+
+        function displayResults(results, logs) {
+            const summaryDiv = document.getElementById('test-summary');
+            const resultsDiv = document.getElementById('test-results');
+            
+            if (!results) {
+                resultsDiv.innerHTML = '<div class="test-fail">No test results available</div>';
+                return;
+            }
+            
+            // Show summary
+            const successRate = Math.round((results.passed / results.total) * 100);
+            const summaryClass = results.success ? 'test-pass' : 'test-fail';
+            summaryDiv.innerHTML = `
+                <div class="test-summary ${summaryClass}">
+                    Test Results: ${results.passed}/${results.total} passed (${successRate}%)
+                </div>
+            `;
+            summaryDiv.style.display = 'block';
+            
+            // Show detailed results
+            let html = '<h3>Detailed Test Results</h3>';
+            results.results.forEach(test => {
+                const resultClass = test.status === 'PASS' ? 'test-pass' : 'test-fail';
+                const icon = test.status === 'PASS' ? '✅' : '❌';
+                html += `
+                    <div class="test-result ${resultClass}">
+                        ${icon} <strong>${test.test}</strong>: ${test.status}
+                        ${test.error ? `<br><small>Error: ${test.error}</small>` : ''}
+                    </div>
+                `;
+            });
+            
+            // Show console logs
+            if (logs.length > 0) {
+                html += '<h3>Test Execution Log</h3>';
+                html += '<pre>' + logs.join('\n') + '</pre>';
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function clearResults() {
+            document.getElementById('test-summary').style.display = 'none';
+            document.getElementById('test-results').innerHTML = '';
+            document.getElementById('test-status').style.display = 'none';
+        }
+
+        function exportResults() {
+            if (!window.deploymentTestResults) {
+                alert('No test results to export. Run tests first.');
+                return;
+            }
+            
+            const results = {
+                timestamp: new Date().toISOString(),
+                url: window.location.href,
+                userAgent: navigator.userAgent,
+                ...window.deploymentTestResults
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `deployment-test-results-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Auto-run tests when page loads
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 1000);
+        });
+    </script>
+</body>
+</html>

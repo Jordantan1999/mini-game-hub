@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameDetailView Component Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-results {
+            margin: 20px 0;
+        }
+        .test-pass {
+            color: green;
+            font-weight: bold;
+        }
+        .test-fail {
+            color: red;
+            font-weight: bold;
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .summary {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .test-container {
+            border: 2px solid #ddd;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        #test-game-detail {
+            min-height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            background: white;
+        }
+        .mock-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>GameDetailView Component Tests</h1>
+    <div id="test-results"></div>
+    
+    <div class="test-container">
+        <h3>Test Game Detail Container</h3>
+        <div id="test-game-detail"></div>
+    </div>
+    
+    <div class="mock-notification" id="mock-notification">
+        Link copied to clipboard!
+    </div>
+    
+    <!-- Include required components -->
+    <script src="../js/components/GameDataManager.js"></script>
+    <script src="../js/components/GameDetailView.js"></script>
+    
+    <script>
+        // Enhanced test framework
+        class TestRunner {
+            constructor() {
+                this.tests = [];
+                this.results = [];
+            }
+
+            test(name, testFn) {
+                this.tests.push({ name, testFn });
+            }
+
+            async runAll() {
+                console.log('Running GameDetailView tests...');
+                
+                for (const test of this.tests) {
+                    try {
+                        await test.testFn();
+                        this.results.push({ name: test.name, passed: true, error: null });
+                        console.log(`✓ ${test.name}`);
+                    } catch (error) {
+                        this.results.push({ name: test.name, passed: false, error: error.message });
+                        console.error(`✗ ${test.name}: ${error.message}`);
+                    }
+                }
+
+                this.displayResults();
+            }
+
+            displayResults() {
+                const container = document.getElementById('test-results');
+                const passed = this.results.filter(r => r.passed).length;
+                const total = this.results.length;
+
+                let html = `<div class="summary">
+                    <h2>GameDetailView Test Results: ${passed}/${total} passed</h2>
+                </div>`;
+
+                this.results.forEach(result => {
+                    const status = result.passed ? 'test-pass' : 'test-fail';
+                    const icon = result.passed ? '✓' : '✗';
+                    const error = result.error ? `<br><small>Error: ${result.error}</small>` : '';
+                    
+                    html += `<div class="test-item">
+                        <span class="${status}">${icon} ${result.name}</span>
+                        ${error}
+                    </div>`;
+                });
+
+                container.innerHTML = html;
+            }
+
+            assert(condition, message) {
+                if (!condition) {
+                    throw new Error(message || 'Assertion failed');
+                }
+            }
+
+            assertEqual(actual, expected, message) {
+                if (actual !== expected) {
+                    throw new Error(message || `Expected ${expected}, got ${actual}`);
+                }
+            }
+
+            assertContains(container, selector, message) {
+                const element = container.querySelector(selector);
+                if (!element) {
+                    throw new Error(message || `Element with selector '${selector}' not found`);
+                }
+                return element;
+            }
+
+            assertElementCount(container, selector, expectedCount, message) {
+                const elements = container.querySelectorAll(selector);
+                if (elements.length !== expectedCount) {
+                    throw new Error(message || `Expected ${expectedCount} elements with selector '${selector}', found ${elements.length}`);
+                }
+            }
+        }
+
+        // Mock data for testing
+        const mockGameData = {
+            'test-game-1': {
+                id: 'test-game-1',
+                title: 'Test Action Adventure',
+                description: 'An exciting action-packed adventure game.',
+                fullDescription: 'Test Action Adventure is an immersive action-adventure game that combines fast-paced combat with exploration elements. Players will navigate through diverse environments, solve puzzles, and engage in epic battles against formidable enemies.\n\nThe game features a rich storyline with multiple branching paths, allowing players to make choices that affect the outcome of their journey.',
+                genre: ['Action', 'Adventure'],
+                rating: 4.5,
+                reviewCount: 150,
+                thumbnail: 'images/test-thumb-1.jpg',
+                screenshots: [
+                    'images/screenshots/test-1-1.jpg',
+                    'images/screenshots/test-1-2.jpg',
+                    'images/screenshots/test-1-3.jpg'
+                ],
+                systemRequirements: {
+                    minimum: 'OS: Windows 10 64-bit, Processor: Intel Core i5-3570K, Memory: 8 GB RAM, Graphics: NVIDIA GeForce GTX 780, Storage: 50 GB available space',
+                    recommended: 'OS: Windows 11 64-bit, Processor: Intel Core i7-8700K, Memory: 16 GB RAM, Graphics: NVIDIA GeForce RTX 3060, Storage: 50 GB available space (SSD recommended)'
+                },
+                officialWebsite: 'https://testgame.example.com',
+                downloadLinks: [
+                    { platform: 'Steam', url: 'https://store.steampowered.com/app/test1' },
+                    { platform: 'Epic Games', url: 'https://store.epicgames.com/test1' }
+                ],
+                releaseDate: '2023-06-15',
+                developer: 'Test Game Studios',
+                tags: ['action', 'adventure', 'story-rich', 'single-player']
+            },
+            'test-game-minimal': {
+                id: 'test-game-minimal',
+                title: 'Minimal Test Game',
+                description: 'A minimal game for testing.',
+                fullDescription: 'A minimal game for testing purposes.',
+                genre: ['Test'],
+                rating: 3.0,
+                reviewCount: 10,
+                thumbnail: 'images/test-minimal.jpg',
+                screenshots: [],
+                systemRequirements: {},
+                officialWebsite: '',
+                downloadLinks: [],
+                releaseDate: '2023-01-01',
+                developer: 'Test Dev',
+                tags: []
+            }
+        };
+
+        // Mock GameDataManager for testing
+        class MockGameDataManager {
+            constructor() {
+                this.games = {};
+                Object.keys(mockGameData).forEach(id => {
+                    this.games[id] = new Game(mockGameData[id]);
+                });
+            }
+
+            async getGameById(gameId) {
+                return this.games[gameId] || null;
+            }
+        }
+
+        // Mock clipboard API for testing
+        const originalClipboard = navigator.clipboard;
+        let mockClipboardText = '';
+        let mockClipboardError = false;
+
+        navigator.clipboard = {
+            writeText: async (text) => {
+                if (mockClipboardError) {
+                    throw new Error('Clipboard write failed');
+                }
+                mockClipboardText = text;
+                return Promise.resolve();
+            }
+        };
+
+        // Mock window.open for testing external links
+        const originalWindowOpen = window.open;
+        let lastOpenedUrl = '';
+        let lastOpenedTarget = '';
+        let lastOpenedFeatures = '';
+
+        window.open = function(url, target, features) {
+            lastOpenedUrl = url;
+            lastOpenedTarget = target;
+            lastOpenedFeatures = features;
+            return { focus: () => {} }; // Mock window object
+        };
+
+        // Test suite
+        const runner = new TestRunner();
+
+        // Test GameDetailView initialization
+        runner.test('GameDetailView should initialize correctly', () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            runner.assert(gameDetailView.container === container, 'Container should be set correctly');
+            runner.assert(gameDetailView.dataManager === mockDataManager, 'Data manager should be set correctly');
+            runner.assertEqual(gameDetailView.currentGame, null, 'Current game should be null initially');
+            runner.assertEqual(gameDetailView.currentScreenshotIndex, 0, 'Screenshot index should be 0 initially');
+        });
+
+        runner.test('GameDetailView should throw error for invalid container', () => {
+            const mockDataManager = new MockGameDataManager();
+            
+            try {
+                new GameDetailView('nonexistent-container', mockDataManager);
+                runner.assert(false, 'Should have thrown error for invalid container');
+            } catch (error) {
+                runner.assert(error.message.includes('not found'), 'Should mention container not found');
+            }
+        });
+
+        runner.test('GameDetailView should load and render game correctly', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            
+            // Wait for rendering to complete
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Check if game detail is rendered
+            runner.assertContains(container, '.game-detail', 'Game detail container should be present');
+            runner.assertContains(container, '.game-header', 'Game header should be present');
+            runner.assertContains(container, '.game-title', 'Game title should be present');
+            
+            const title = container.querySelector('.game-title');
+            runner.assertEqual(title.textContent, 'Test Action Adventure', 'Should display correct game title');
+            
+            runner.assert(gameDetailView.currentGame !== null, 'Current game should be set');
+            runner.assertEqual(gameDetailView.currentGame.id, 'test-game-1', 'Should load correct game');
+        });
+
+        runner.test('GameDetailView should handle game not found', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('nonexistent-game');
+            
+            // Wait for rendering to complete
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const notFoundState = container.querySelector('.game-not-found');
+            runner.assert(notFoundState, 'Should show game not found state');
+            
+            const message = notFoundState.textContent;
+            runner.assert(message.includes('Game Not Found'), 'Should show appropriate error message');
+        });
+
+        runner.test('Game header should render correctly', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Check header elements
+            runner.assertContains(container, '.back-to-list-btn', 'Back button should be present');
+            runner.assertContains(container, '.game-title', 'Game title should be present');
+            runner.assertContains(container, '.game-developer', 'Developer info should be present');
+            runner.assertContains(container, '.game-release-date', 'Release date should be present');
+            runner.assertContains(container, '.game-genre', 'Genre info should be present');
+            runner.assertContains(container, '.rating-stars', 'Rating stars should be present');
+            
+            const developer = container.querySelector('.game-developer .meta-value');
+            runner.assertEqual(developer.textContent, 'Test Game Studios', 'Should show correct developer');
+            
+            const genre = container.querySelector('.game-genre .meta-value');
+            runner.assertEqual(genre.textContent, 'Action, Adventure', 'Should show correct genres');
+        });
+
+        runner.test('Screenshots gallery should render correctly', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Check screenshots section
+            runner.assertContains(container, '.game-screenshots-section', 'Screenshots section should be present');
+            runner.assertContains(container, '.main-screenshot', 'Main screenshot should be present');
+            runner.assertContains(container, '.screenshot-thumbnails', 'Thumbnails should be present');
+            
+            const thumbnails = container.querySelectorAll('.screenshot-thumbnail');
+            runner.assertEqual(thumbnails.length, 3, 'Should have 3 screenshot thumbnails');
+            
+            // Check navigation buttons
+            runner.assertContains(container, '.screenshot-nav-btn.prev', 'Previous button should be present');
+            runner.assertContains(container, '.screenshot-nav-btn.next', 'Next button should be present');
+        });
+
+        runner.test('Screenshots navigation should work correctly', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const nextButton = container.querySelector('.screenshot-nav-btn.next');
+            const mainScreenshot = container.querySelector('.main-screenshot');
+            
+            const initialSrc = mainScreenshot.src;
+            
+            // Click next button
+            nextButton.click();
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+            runner.assert(mainScreenshot.src !== initialSrc, 'Screenshot should change after clicking next');
+            runner.assertEqual(gameDetailView.currentScreenshotIndex, 1, 'Screenshot index should be 1');
+            
+            // Test thumbnail click
+            const firstThumbnail = container.querySelector('.screenshot-thumbnail[data-index="0"]');
+            firstThumbnail.click();
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+            runner.assertEqual(gameDetailView.currentScreenshotIndex, 0, 'Should return to first screenshot');
+        });
+
+        runner.test('Game info section should render correctly', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Check game info section
+            runner.assertContains(container, '.game-info-section', 'Game info section should be present');
+            runner.assertContains(container, '.game-description', 'Description should be present');
+            runner.assertContains(container, '.game-tags', 'Tags section should be present');
+            
+            const description = container.querySelector('.description-content');
+            runner.assert(description.textContent.includes('Test Action Adventure'), 'Should show game description');
+            
+            const tags = container.querySelectorAll('.game-tag');
+            runner.assert(tags.length > 0, 'Should show game tags');
+        });
+
+        runner.test('System requirements should render correctly', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Check system requirements section
+            runner.assertContains(container, '.system-requirements-section', 'System requirements section should be present');
+            
+            const minRequirements = container.querySelector('.requirements-column:first-child');
+            const recRequirements = container.querySelector('.requirements-column:last-child');
+            
+            runner.assert(minRequirements, 'Minimum requirements should be present');
+            runner.assert(recRequirements, 'Recommended requirements should be present');
+            
+            runner.assert(minRequirements.textContent.includes('Windows 10'), 'Should show minimum requirements');
+            runner.assert(recRequirements.textContent.includes('Windows 11'), 'Should show recommended requirements');
+        });
+
+        runner.test('Download links should render correctly', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Check download links section
+            runner.assertContains(container, '.download-links-section', 'Download links section should be present');
+            runner.assertContains(container, '.official-website-link', 'Official website link should be present');
+            
+            const downloadLinks = container.querySelectorAll('.download-link');
+            runner.assertEqual(downloadLinks.length, 2, 'Should have 2 download links');
+            
+            const steamLink = Array.from(downloadLinks).find(link => 
+                link.textContent.includes('Steam')
+            );
+            runner.assert(steamLink, 'Should have Steam download link');
+        });
+
+        runner.test('Social sharing should render correctly', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Check social sharing section
+            runner.assertContains(container, '.social-sharing-section', 'Social sharing section should be present');
+            
+            const socialButtons = container.querySelectorAll('.social-share-btn');
+            runner.assert(socialButtons.length >= 4, 'Should have at least 4 social sharing buttons');
+            
+            // Check for specific platforms
+            const twitterBtn = container.querySelector('.social-share-btn.twitter');
+            const facebookBtn = container.querySelector('.social-share-btn.facebook');
+            const redditBtn = container.querySelector('.social-share-btn.reddit');
+            const copyBtn = container.querySelector('.social-share-btn.copy-link');
+            
+            runner.assert(twitterBtn, 'Should have Twitter share button');
+            runner.assert(facebookBtn, 'Should have Facebook share button');
+            runner.assert(redditBtn, 'Should have Reddit share button');
+            runner.assert(copyBtn, 'Should have copy link button');
+        });
+
+        runner.test('External links should work correctly', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const officialLink = container.querySelector('.official-website-link');
+            
+            // Reset mock
+            lastOpenedUrl = '';
+            lastOpenedTarget = '';
+            
+            // Click the link
+            officialLink.click();
+            
+            runner.assertEqual(lastOpenedUrl, 'https://testgame.example.com', 'Should open correct URL');
+            runner.assertEqual(lastOpenedTarget, '_blank', 'Should open in new tab');
+            runner.assert(lastOpenedFeatures.includes('noopener'), 'Should include security features');
+        });
+
+        runner.test('Social sharing should work correctly', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const twitterBtn = container.querySelector('.social-share-btn.twitter');
+            
+            // Reset mock
+            lastOpenedUrl = '';
+            
+            // Click Twitter share button
+            twitterBtn.click();
+            
+            runner.assert(lastOpenedUrl.includes('twitter.com/intent/tweet'), 'Should open Twitter share URL');
+            runner.assert(lastOpenedUrl.includes('Test%20Action%20Adventure'), 'Should include game title in share URL');
+        });
+
+        runner.test('Copy link functionality should work', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const copyBtn = container.querySelector('.social-share-btn.copy-link');
+            
+            // Reset mock
+            mockClipboardText = '';
+            mockClipboardError = false;
+            
+            // Click copy button
+            copyBtn.click();
+            
+            // Wait for async operation
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            runner.assert(mockClipboardText.length > 0, 'Should copy text to clipboard');
+            runner.assert(mockClipboardText.includes(window.location.origin), 'Should copy current page URL');
+        });
+
+        runner.test('Copy link fallback should work when clipboard API fails', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const copyBtn = container.querySelector('.social-share-btn.copy-link');
+            
+            // Mock clipboard error
+            mockClipboardError = true;
+            
+            // Mock document.execCommand
+            let execCommandCalled = false;
+            const originalExecCommand = document.execCommand;
+            document.execCommand = function(command) {
+                if (command === 'copy') {
+                    execCommandCalled = true;
+                    return true;
+                }
+                return false;
+            };
+            
+            // Click copy button
+            copyBtn.click();
+            
+            // Wait for async operation
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            runner.assert(execCommandCalled, 'Should fall back to execCommand when clipboard API fails');
+            
+            // Restore
+            document.execCommand = originalExecCommand;
+            mockClipboardError = false;
+        });
+
+        runner.test('Back to list button should work correctly', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const backBtn = container.querySelector('.back-to-list-btn');
+            
+            // Mock hash change
+            let hashChanged = false;
+            const originalHash = window.location.hash;
+            Object.defineProperty(window.location, 'hash', {
+                get: () => hashChanged ? '' : originalHash,
+                set: (value) => { hashChanged = (value === ''); }
+            });
+            
+            // Click back button
+            backBtn.click();
+            
+            runner.assert(hashChanged, 'Should change hash to empty string');
+        });
+
+        runner.test('GameDetailView should handle minimal game data', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-minimal');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Should still render basic structure
+            runner.assertContains(container, '.game-detail', 'Game detail should render for minimal data');
+            runner.assertContains(container, '.game-title', 'Title should be present');
+            
+            const title = container.querySelector('.game-title');
+            runner.assertEqual(title.textContent, 'Minimal Test Game', 'Should show correct title');
+            
+            // Should handle missing screenshots gracefully
+            const screenshotsSection = container.querySelector('.game-screenshots-section');
+            if (screenshotsSection) {
+                const navButtons = container.querySelectorAll('.screenshot-nav-btn');
+                runner.assertEqual(navButtons.length, 0, 'Should not show nav buttons for no screenshots');
+            }
+            
+            // Should handle missing system requirements
+            const sysReqSection = container.querySelector('.system-requirements-section');
+            runner.assert(!sysReqSection, 'Should not show system requirements section when empty');
+            
+            // Should handle missing download links
+            const downloadSection = container.querySelector('.download-links-section');
+            runner.assert(!downloadSection, 'Should not show download section when no links available');
+        });
+
+        runner.test('GameDetailView should be accessible', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Check semantic HTML structure
+            const article = container.querySelector('.game-detail');
+            runner.assertEqual(article.tagName.toLowerCase(), 'article', 'Should use article element');
+            runner.assert(article.hasAttribute('itemscope'), 'Should have structured data');
+            
+            // Check header accessibility
+            const header = container.querySelector('.game-header header');
+            runner.assert(header, 'Should have header element');
+            
+            // Check button accessibility
+            const backBtn = container.querySelector('.back-to-list-btn');
+            runner.assert(backBtn.hasAttribute('aria-label'), 'Back button should have aria-label');
+            
+            // Check image accessibility
+            const mainImage = container.querySelector('.main-screenshot');
+            runner.assert(mainImage.hasAttribute('alt'), 'Main image should have alt text');
+            
+            // Check rating accessibility
+            const ratingStars = container.querySelector('.rating-stars');
+            runner.assert(ratingStars.hasAttribute('aria-label'), 'Rating should have aria-label');
+            
+            // Check social buttons accessibility
+            const socialButtons = container.querySelectorAll('.social-share-btn');
+            socialButtons.forEach(btn => {
+                runner.assert(btn.hasAttribute('aria-label'), 'Social buttons should have aria-labels');
+            });
+        });
+
+        runner.test('GameDetailView should update page metadata', async () => {
+            const container = document.getElementById('test-game-detail');
+            const mockDataManager = new MockGameDataManager();
+            
+            const gameDetailView = new GameDetailView('test-game-detail', mockDataManager);
+            
+            const originalTitle = document.title;
+            
+            await gameDetailView.loadGame('test-game-1');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Check if title was updated
+            runner.assert(document.title.includes('Test Action Adventure'), 'Should update page title');
+            runner.assert(document.title.includes('Game Hub'), 'Should include site name in title');
+            
+            // Check meta description
+            const metaDescription = document.querySelector('meta[name="description"]');
+            if (metaDescription) {
+                runner.assert(metaDescription.content.includes('exciting action-packed'), 'Should update meta description');
+            }
+            
+            // Restore original title
+            document.title = originalTitle;
+        });
+
+        // Restore original functions after tests
+        window.addEventListener('beforeunload', () => {
+            navigator.clipboard = originalClipboard;
+            window.open = originalWindowOpen;
+        });
+
+        // Run all tests when page loads
+        window.addEventListener('load', () => {
+            // Add some delay to ensure DOM is ready
+            setTimeout(() => {
+                runner.runAll();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Links Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .test-result {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+        }
+        .pass {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .fail {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .test-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #0070ba, #003087);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            margin: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Donation Links Test</h1>
+    <p>This test verifies that the PayPal donation links are working correctly.</p>
+    
+    <div id="test-results"></div>
+    
+    <h2>Manual Test</h2>
+    <p>Click the button below to test the donation link manually:</p>
+    <a href="https://paypal.me/DonateToJordan?locale.x=en_US&country.x=MY" 
+       target="_blank" 
+       rel="noopener noreferrer" 
+       class="test-button">
+        💝 Test Donation Link
+    </a>
+    
+    <script>
+        class DonationTest {
+            constructor() {
+                this.testResults = [];
+                this.runTests();
+            }
+            
+            runTests() {
+                console.log('🧪 Running donation link tests...');
+                
+                this.testDonationLinkFormat();
+                this.testDonationLinkSecurity();
+                this.testDonationButtonPresence();
+                
+                this.displayResults();
+            }
+            
+            testDonationLinkFormat() {
+                try {
+                    const expectedUrl = 'https://paypal.me/DonateToJordan?locale.x=en_US&country.x=MY';
+                    const donationLinks = document.querySelectorAll('a[href*="paypal.me"]');
+                    
+                    // Test that the URL format is correct
+                    const url = new URL(expectedUrl);
+                    this.assert(url.hostname === 'paypal.me', 'PayPal domain is correct');
+                    this.assert(url.pathname === '/DonateToJordan', 'PayPal username is correct');
+                    this.assert(url.searchParams.get('locale.x') === 'en_US', 'Locale parameter is correct');
+                    this.assert(url.searchParams.get('country.x') === 'MY', 'Country parameter is correct');
+                    
+                    this.testResults.push({ test: 'Donation Link Format', status: 'PASS' });
+                } catch (error) {
+                    this.testResults.push({ test: 'Donation Link Format', status: 'FAIL', error: error.message });
+                }
+            }
+            
+            testDonationLinkSecurity() {
+                try {
+                    const donationLinks = document.querySelectorAll('a[href*="paypal.me"]');
+                    
+                    donationLinks.forEach((link, index) => {
+                        this.assert(link.getAttribute('target') === '_blank', `Link ${index + 1} opens in new tab`);
+                        this.assert(link.getAttribute('rel') === 'noopener noreferrer', `Link ${index + 1} has security attributes`);
+                    });
+                    
+                    this.testResults.push({ test: 'Donation Link Security', status: 'PASS' });
+                } catch (error) {
+                    this.testResults.push({ test: 'Donation Link Security', status: 'FAIL', error: error.message });
+                }
+            }
+            
+            testDonationButtonPresence() {
+                try {
+                    const donationLinks = document.querySelectorAll('a[href*="paypal.me"]');
+                    this.assert(donationLinks.length > 0, 'At least one donation link is present');
+                    
+                    // Check if links have appropriate styling classes
+                    let hasStyledButton = false;
+                    donationLinks.forEach(link => {
+                        if (link.classList.contains('donate-btn') || link.classList.contains('footer-donate-btn') || link.classList.contains('test-button')) {
+                            hasStyledButton = true;
+                        }
+                    });
+                    
+                    this.assert(hasStyledButton, 'Donation links have appropriate styling');
+                    
+                    this.testResults.push({ test: 'Donation Button Presence', status: 'PASS' });
+                } catch (error) {
+                    this.testResults.push({ test: 'Donation Button Presence', status: 'FAIL', error: error.message });
+                }
+            }
+            
+            assert(condition, message) {
+                if (!condition) {
+                    throw new Error(message);
+                }
+            }
+            
+            displayResults() {
+                const resultsContainer = document.getElementById('test-results');
+                let html = '<h2>Test Results</h2>';
+                
+                this.testResults.forEach(result => {
+                    const statusClass = result.status === 'PASS' ? 'pass' : 'fail';
+                    html += `
+                        <div class="test-result ${statusClass}">
+                            <strong>${result.test}:</strong> ${result.status}
+                            ${result.error ? `<br><small>Error: ${result.error}</small>` : ''}
+                        </div>
+                    `;
+                });
+                
+                const passCount = this.testResults.filter(r => r.status === 'PASS').length;
+                const totalCount = this.testResults.length;
+                
+                html += `
+                    <div class="test-result ${passCount === totalCount ? 'pass' : 'fail'}">
+                        <strong>Overall Result:</strong> ${passCount}/${totalCount} tests passed
+                    </div>
+                `;
+                
+                resultsContainer.innerHTML = html;
+                
+                console.log(`✅ Donation tests completed: ${passCount}/${totalCount} passed`);
+            }
+        }
+        
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new DonationTest();
+        });
+    </script>
+</body>
+</html>

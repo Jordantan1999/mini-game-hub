@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Data Manager Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-results {
+            margin: 20px 0;
+        }
+        .test-pass {
+            color: green;
+            font-weight: bold;
+        }
+        .test-fail {
+            color: red;
+            font-weight: bold;
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .summary {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Data Manager Tests</h1>
+    <div id="test-results"></div>
+    
+    <!-- Include the GameDataManager -->
+    <script src="../js/components/GameDataManager.js"></script>
+    
+    <script>
+        // Simple test framework
+        class TestRunner {
+            constructor() {
+                this.tests = [];
+                this.results = [];
+            }
+
+            test(name, testFn) {
+                this.tests.push({ name, testFn });
+            }
+
+            async runAll() {
+                console.log('Running tests...');
+                
+                for (const test of this.tests) {
+                    try {
+                        await test.testFn();
+                        this.results.push({ name: test.name, passed: true, error: null });
+                        console.log(`✓ ${test.name}`);
+                    } catch (error) {
+                        this.results.push({ name: test.name, passed: false, error: error.message });
+                        console.error(`✗ ${test.name}: ${error.message}`);
+                    }
+                }
+
+                this.displayResults();
+            }
+
+            displayResults() {
+                const container = document.getElementById('test-results');
+                const passed = this.results.filter(r => r.passed).length;
+                const total = this.results.length;
+
+                let html = `<div class="summary">
+                    <h2>Test Results: ${passed}/${total} passed</h2>
+                </div>`;
+
+                this.results.forEach(result => {
+                    const status = result.passed ? 'test-pass' : 'test-fail';
+                    const icon = result.passed ? '✓' : '✗';
+                    const error = result.error ? `<br><small>Error: ${result.error}</small>` : '';
+                    
+                    html += `<div class="test-item">
+                        <span class="${status}">${icon} ${result.name}</span>
+                        ${error}
+                    </div>`;
+                });
+
+                container.innerHTML = html;
+            }
+
+            assert(condition, message) {
+                if (!condition) {
+                    throw new Error(message || 'Assertion failed');
+                }
+            }
+
+            assertEqual(actual, expected, message) {
+                if (actual !== expected) {
+                    throw new Error(message || `Expected ${expected}, got ${actual}`);
+                }
+            }
+
+            assertArrayEqual(actual, expected, message) {
+                if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+                    throw new Error(message || `Arrays not equal: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+                }
+            }
+        }
+
+        // Mock localStorage for testing
+        class MockStorage {
+            constructor() {
+                this.data = {};
+            }
+
+            getItem(key) {
+                return this.data[key] || null;
+            }
+
+            setItem(key, value) {
+                this.data[key] = value;
+            }
+
+            removeItem(key) {
+                delete this.data[key];
+            }
+
+            clear() {
+                this.data = {};
+            }
+        }
+
+        // Mock fetch for testing
+        const originalFetch = window.fetch;
+        let mockFetchResponse = null;
+        let mockFetchError = null;
+
+        window.fetch = function(url) {
+            if (mockFetchError) {
+                return Promise.reject(mockFetchError);
+            }
+            
+            if (mockFetchResponse) {
+                return Promise.resolve({
+                    ok: true,
+                    status: 200,
+                    json: () => Promise.resolve(mockFetchResponse)
+                });
+            }
+
+            // Fallback to original fetch
+            return originalFetch.apply(this, arguments);
+        };
+
+        // Test suite
+        const runner = new TestRunner();
+
+        // Test Game class
+        runner.test('Game constructor should create valid game object', () => {
+            const gameData = {
+                id: 'test-game',
+                title: 'Test Game',
+                description: 'A test game',
+                genre: ['Action'],
+                rating: 4.5,
+                reviewCount: 100
+            };
+
+            const game = new Game(gameData);
+            
+            runner.assertEqual(game.id, 'test-game');
+            runner.assertEqual(game.title, 'Test Game');
+            runner.assertEqual(game.description, 'A test game');
+            runner.assertArrayEqual(game.genre, ['Action']);
+            runner.assertEqual(game.rating, 4.5);
+            runner.assertEqual(game.reviewCount, 100);
+        });
+
+        runner.test('Game constructor should handle missing optional fields', () => {
+            const gameData = {
+                id: 'minimal-game',
+                title: 'Minimal Game'
+            };
+
+            const game = new Game(gameData);
+            
+            runner.assertEqual(game.id, 'minimal-game');
+            runner.assertEqual(game.title, 'Minimal Game');
+            runner.assertEqual(game.description, '');
+            runner.assertArrayEqual(game.genre, []);
+            runner.assertEqual(game.rating, 0);
+            runner.assertEqual(game.reviewCount, 0);
+        });
+
+        runner.test('Game constructor should throw error for missing required fields', () => {
+            try {
+                new Game({});
+                runner.assert(false, 'Should have thrown error for missing required fields');
+            } catch (error) {
+                runner.assert(error.message.includes('id and title'), 'Should mention missing id and title');
+            }
+        });
+
+        runner.test('Game getFormattedRating should return correct format', () => {
+            const game = new Game({
+                id: 'test',
+                title: 'Test',
+                rating: 4.2,
+                reviewCount: 150
+            });
+
+            runner.assertEqual(game.getFormattedRating(), '4.2/5 (150 reviews)');
+        });
+
+        runner.test('Game getGenreString should join genres correctly', () => {
+            const game = new Game({
+                id: 'test',
+                title: 'Test',
+                genre: ['Action', 'Adventure', 'RPG']
+            });
+
+            runner.assertEqual(game.getGenreString(), 'Action, Adventure, RPG');
+        });
+
+        // Test GameDataManager
+        runner.test('GameDataManager should initialize correctly', () => {
+            const manager = new GameDataManager();
+            
+            runner.assertEqual(manager.cacheKey, 'gameData');
+            runner.assertEqual(manager.isLoaded, false);
+            runner.assertArrayEqual(manager.games, []);
+        });
+
+        runner.test('GameDataManager should load and cache data successfully', async () => {
+            // Setup mock
+            const mockData = {
+                games: [
+                    {
+                        id: 'test-game-1',
+                        title: 'Test Game 1',
+                        description: 'First test game',
+                        genre: ['Action'],
+                        rating: 4.0,
+                        reviewCount: 50
+                    },
+                    {
+                        id: 'test-game-2',
+                        title: 'Test Game 2',
+                        description: 'Second test game',
+                        genre: ['RPG'],
+                        rating: 4.5,
+                        reviewCount: 75
+                    }
+                ]
+            };
+
+            mockFetchResponse = mockData;
+            
+            // Use mock localStorage
+            const originalLocalStorage = window.localStorage;
+            window.localStorage = new MockStorage();
+
+            const manager = new GameDataManager();
+            const games = await manager.loadGames();
+
+            runner.assertEqual(games.length, 2);
+            runner.assertEqual(games[0].title, 'Test Game 1');
+            runner.assertEqual(games[1].title, 'Test Game 2');
+            runner.assertEqual(manager.isLoaded, true);
+
+            // Check if data was cached
+            const cachedData = window.localStorage.getItem('gameData');
+            runner.assert(cachedData !== null, 'Data should be cached');
+
+            // Restore
+            window.localStorage = originalLocalStorage;
+            mockFetchResponse = null;
+        });
+
+        runner.test('GameDataManager should handle fetch errors gracefully', async () => {
+            mockFetchError = new Error('Network error');
+
+            const manager = new GameDataManager();
+            
+            try {
+                await manager.loadGames();
+                runner.assert(false, 'Should have thrown GameDataError');
+            } catch (error) {
+                runner.assert(error instanceof GameDataError, 'Should throw GameDataError');
+                runner.assert(error.message.includes('Failed to load games'), 'Should have descriptive error message');
+            }
+
+            mockFetchError = null;
+        });
+
+        runner.test('GameDataManager should return cached data when available', async () => {
+            const mockStorage = new MockStorage();
+            const testData = [
+                { id: 'cached-game', title: 'Cached Game', genre: ['Test'] }
+            ];
+
+            // Pre-populate cache
+            mockStorage.setItem('gameData', JSON.stringify(testData));
+            mockStorage.setItem('gameDataTimestamp', Date.now().toString());
+
+            const originalLocalStorage = window.localStorage;
+            window.localStorage = mockStorage;
+
+            const manager = new GameDataManager();
+            const games = await manager.loadGames();
+
+            runner.assertEqual(games.length, 1);
+            runner.assertEqual(games[0].title, 'Cached Game');
+
+            // Restore
+            window.localStorage = originalLocalStorage;
+        });
+
+        runner.test('GameDataManager should clear expired cache', async () => {
+            const mockStorage = new MockStorage();
+            const testData = [{ id: 'old-game', title: 'Old Game' }];
+
+            // Set expired cache (25 hours ago)
+            const expiredTime = Date.now() - (25 * 60 * 60 * 1000);
+            mockStorage.setItem('gameData', JSON.stringify(testData));
+            mockStorage.setItem('gameDataTimestamp', expiredTime.toString());
+
+            const originalLocalStorage = window.localStorage;
+            window.localStorage = mockStorage;
+
+            const manager = new GameDataManager();
+            const cachedData = manager.getCachedData();
+
+            runner.assertEqual(cachedData, null, 'Expired cache should return null');
+            runner.assertEqual(mockStorage.getItem('gameData'), null, 'Expired cache should be cleared');
+
+            // Restore
+            window.localStorage = originalLocalStorage;
+        });
+
+        runner.test('GameDataManager searchGames should filter correctly', async () => {
+            const mockData = {
+                games: [
+                    { id: '1', title: 'Action Hero', description: 'Fast-paced game', genre: ['Action'] },
+                    { id: '2', title: 'RPG Quest', description: 'Role-playing adventure', genre: ['RPG'] },
+                    { id: '3', title: 'Puzzle Master', description: 'Brain teasing puzzles', genre: ['Puzzle'] }
+                ]
+            };
+
+            mockFetchResponse = mockData;
+            const originalLocalStorage = window.localStorage;
+            window.localStorage = new MockStorage();
+
+            const manager = new GameDataManager();
+            
+            // Test search by title
+            let results = await manager.searchGames('Action');
+            runner.assertEqual(results.length, 1);
+            runner.assertEqual(results[0].title, 'Action Hero');
+
+            // Test search by genre
+            results = await manager.searchGames('RPG');
+            runner.assertEqual(results.length, 1);
+            runner.assertEqual(results[0].title, 'RPG Quest');
+
+            // Test search by description
+            results = await manager.searchGames('adventure');
+            runner.assertEqual(results.length, 1);
+            runner.assertEqual(results[0].title, 'RPG Quest');
+
+            // Test empty search
+            results = await manager.searchGames('');
+            runner.assertEqual(results.length, 3);
+
+            // Restore
+            window.localStorage = originalLocalStorage;
+            mockFetchResponse = null;
+        });
+
+        runner.test('GameDataManager getGameById should return correct game', async () => {
+            const mockData = {
+                games: [
+                    { id: 'game-1', title: 'First Game' },
+                    { id: 'game-2', title: 'Second Game' }
+                ]
+            };
+
+            mockFetchResponse = mockData;
+            const originalLocalStorage = window.localStorage;
+            window.localStorage = new MockStorage();
+
+            const manager = new GameDataManager();
+            
+            const game = await manager.getGameById('game-2');
+            runner.assert(game !== null, 'Should find the game');
+            runner.assertEqual(game.title, 'Second Game');
+
+            const notFound = await manager.getGameById('nonexistent');
+            runner.assertEqual(notFound, null, 'Should return null for nonexistent game');
+
+            // Restore
+            window.localStorage = originalLocalStorage;
+            mockFetchResponse = null;
+        });
+
+        // Run all tests when page loads
+        window.addEventListener('load', () => {
+            runner.runAll();
+        });
+    </script>
+</body>
+</html>
