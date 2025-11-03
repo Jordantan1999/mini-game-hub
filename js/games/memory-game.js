@@ -129,10 +129,14 @@ class MemoryGame {
         const card = this.cards[cardId];
         
         // Ensure card exists and has required properties
-        if (!card || typeof card.isFlipped === 'undefined' || typeof card.isMatched === 'undefined') {
-            console.error('Invalid card object:', card);
+        if (!card) {
+            console.error('Card not found for ID:', cardId);
             return;
         }
+        
+        // Initialize properties if they don't exist (defensive programming)
+        if (typeof card.isFlipped === 'undefined') card.isFlipped = false;
+        if (typeof card.isMatched === 'undefined') card.isMatched = false;
         
         // Can't flip if already flipped, matched, or game completed
         if (card.isFlipped || card.isMatched || this.gameCompleted) {
@@ -152,17 +156,26 @@ class MemoryGame {
         }
         
         // Flip the card
+        console.log('Flipping card:', cardId, 'Symbol:', card.symbol);
         card.isFlipped = true;
         cardElement.classList.add('flipped');
         this.flippedCards.push(card);
+        console.log('Card flipped. Classes:', cardElement.className);
         
         // Check for match when 2 cards are flipped
         if (this.flippedCards.length === 2) {
             this.moves++;
             this.updateMoves();
             
-            setTimeout(() => {
+            // Clear any existing timeout
+            if (this.matchCheckTimeout) {
+                clearTimeout(this.matchCheckTimeout);
+            }
+            
+            // Store timeout ID for cleanup
+            this.matchCheckTimeout = setTimeout(() => {
                 this.checkForMatch();
+                this.matchCheckTimeout = null;
             }, 1000);
         }
     }
@@ -287,6 +300,12 @@ class MemoryGame {
     }
     
     newGame() {
+        // Clear any pending timeouts that might call checkForMatch
+        if (this.matchCheckTimeout) {
+            clearTimeout(this.matchCheckTimeout);
+            this.matchCheckTimeout = null;
+        }
+        
         // Reset game state
         this.flippedCards = [];
         this.matchedPairs = 0;
@@ -297,19 +316,32 @@ class MemoryGame {
         
         if (this.timerInterval) {
             clearInterval(this.timerInterval);
+            this.timerInterval = null;
         }
         
         // Setup new cards and render
         this.setupCards();
         this.render();
-        this.attachEventListeners();
+        // Don't call attachEventListeners again - they're already attached
     }
     
     destroy() {
-        // Clean up timer and event listeners
+        // Clean up timers
         if (this.timerInterval) {
             clearInterval(this.timerInterval);
+            this.timerInterval = null;
         }
+        if (this.matchCheckTimeout) {
+            clearTimeout(this.matchCheckTimeout);
+            this.matchCheckTimeout = null;
+        }
+        
+        // Reset game state
+        this.flippedCards = [];
+        this.gameStarted = false;
+        this.gameCompleted = false;
+        
+        // Clear container
         if (this.container) {
             this.container.innerHTML = '';
         }
