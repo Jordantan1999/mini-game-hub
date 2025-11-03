@@ -1,0 +1,329 @@
+/**
+ * Game Hub Home Page
+ * Manages game tile selection and fullscreen game experience
+ */
+class GameHub {
+    constructor() {
+        this.games = [
+            {
+                id: 'tic-tac-toe',
+                title: 'Tic Tac Toe',
+                description: 'Classic strategy game',
+                icon: '⭕',
+                color: '#e74c3c',
+                className: 'TicTacToe'
+            },
+            {
+                id: 'snake',
+                title: 'Snake Game',
+                description: 'Eat and grow longer',
+                icon: '🐍',
+                color: '#27ae60',
+                className: 'SnakeGame'
+            },
+            {
+                id: 'memory',
+                title: 'Memory Game',
+                description: 'Match the pairs',
+                icon: '🧠',
+                color: '#9b59b6',
+                className: 'MemoryGame'
+            },
+            {
+                id: 'rps',
+                title: 'Rock Paper Scissors',
+                description: 'Beat the computer',
+                icon: '✂️',
+                color: '#f39c12',
+                className: 'RockPaperScissors'
+            },
+            {
+                id: 'guess',
+                title: 'Guess Number',
+                description: 'Find the secret number',
+                icon: '🎲',
+                color: '#3498db',
+                className: 'GuessNumber'
+            },
+            {
+                id: 'sudoku',
+                title: 'Sudoku 4×4',
+                description: 'Solve the puzzle',
+                icon: '🧩',
+                color: '#e67e22',
+                className: 'Sudoku4x4'
+            },
+            {
+                id: 'typing',
+                title: 'Typing Test',
+                description: 'Test your speed',
+                icon: '⌨️',
+                color: '#1abc9c',
+                className: 'TypingSpeedTest'
+            }
+        ];
+        
+        this.currentGame = null;
+        this.currentGameInstance = null;
+        this.isFullscreen = false;
+        
+        this.init();
+    }
+    
+    init() {
+        this.renderGameTiles();
+        this.setupEventListeners();
+        this.setupFullscreenAPI();
+    }
+    
+    renderGameTiles() {
+        const gamesGrid = document.getElementById('games-grid');
+        if (!gamesGrid) return;
+        
+        gamesGrid.innerHTML = this.games.map(game => `
+            <div class="game-tile" 
+                 data-game-id="${game.id}"
+                 style="--game-color: ${game.color}"
+                 role="button"
+                 tabindex="0"
+                 aria-label="Play ${game.title}">
+                <div class="game-tile-content">
+                    <div class="game-icon">${game.icon}</div>
+                    <h3 class="game-title">${game.title}</h3>
+                    <p class="game-description">${game.description}</p>
+                    <div class="play-overlay">
+                        <span class="play-text">▶ PLAY</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    setupEventListeners() {
+        // Game tile clicks
+        document.addEventListener('click', (e) => {
+            const gameTile = e.target.closest('.game-tile');
+            if (gameTile) {
+                const gameId = gameTile.dataset.gameId;
+                this.playGame(gameId);
+            }
+        });
+        
+        // Keyboard navigation for tiles
+        document.addEventListener('keydown', (e) => {
+            const gameTile = e.target.closest('.game-tile');
+            if (gameTile && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                const gameId = gameTile.dataset.gameId;
+                this.playGame(gameId);
+            }
+        });
+        
+        // Back button
+        const backBtn = document.getElementById('back-btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => this.exitGame());
+        }
+        
+        // Fullscreen button
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        if (fullscreenBtn) {
+            fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
+        }
+        
+        // Escape key to exit game
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.currentGame) {
+                this.exitGame();
+            }
+        });
+        
+        // Handle fullscreen change events
+        document.addEventListener('fullscreenchange', () => this.handleFullscreenChange());
+        document.addEventListener('webkitfullscreenchange', () => this.handleFullscreenChange());
+        document.addEventListener('mozfullscreenchange', () => this.handleFullscreenChange());
+        document.addEventListener('MSFullscreenChange', () => this.handleFullscreenChange());
+    }
+    
+    setupFullscreenAPI() {
+        // Check if fullscreen is supported
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        if (!this.isFullscreenSupported()) {
+            if (fullscreenBtn) {
+                fullscreenBtn.style.display = 'none';
+            }
+        }
+    }
+    
+    playGame(gameId) {
+        const game = this.games.find(g => g.id === gameId);
+        if (!game) return;
+        
+        this.currentGame = game;
+        
+        // Show fullscreen container
+        const fullscreenContainer = document.getElementById('fullscreen-game');
+        const gamesGrid = document.querySelector('.games-grid-section');
+        const hero = document.querySelector('.hero');
+        
+        if (fullscreenContainer) fullscreenContainer.style.display = 'block';
+        if (gamesGrid) gamesGrid.style.display = 'none';
+        if (hero) hero.style.display = 'none';
+        
+        // Update title
+        const titleElement = document.getElementById('current-game-title');
+        if (titleElement) {
+            titleElement.textContent = game.title;
+        }
+        
+        // Initialize the game
+        this.initializeGame(game);
+        
+        // Track analytics
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'game_start', {
+                'game_name': game.id,
+                'event_category': 'games'
+            });
+        }
+        
+        // Add body class for styling
+        document.body.classList.add('game-active');
+    }
+    
+    initializeGame(game) {
+        const gameContentArea = document.getElementById('game-content-area');
+        if (!gameContentArea) return;
+        
+        // Clear previous game
+        gameContentArea.innerHTML = `<div id="current-game-container"></div>`;
+        
+        // Create game instance
+        try {
+            const GameClass = window[game.className];
+            if (GameClass) {
+                this.currentGameInstance = new GameClass('current-game-container');
+            } else {
+                console.error(`Game class ${game.className} not found`);
+                gameContentArea.innerHTML = `
+                    <div class="game-error">
+                        <h3>Game not available</h3>
+                        <p>Sorry, ${game.title} is currently unavailable.</p>
+                        <button class="btn" onclick="gameHub.exitGame()">Back to Games</button>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Error initializing game:', error);
+            gameContentArea.innerHTML = `
+                <div class="game-error">
+                    <h3>Error loading game</h3>
+                    <p>There was a problem loading ${game.title}.</p>
+                    <button class="btn" onclick="gameHub.exitGame()">Back to Games</button>
+                </div>
+            `;
+        }
+    }
+    
+    exitGame() {
+        // Clean up current game
+        if (this.currentGameInstance && typeof this.currentGameInstance.destroy === 'function') {
+            this.currentGameInstance.destroy();
+        }
+        this.currentGameInstance = null;
+        
+        // Exit fullscreen if active
+        if (this.isFullscreen) {
+            this.exitFullscreen();
+        }
+        
+        // Show game selection
+        const fullscreenContainer = document.getElementById('fullscreen-game');
+        const gamesGrid = document.querySelector('.games-grid-section');
+        const hero = document.querySelector('.hero');
+        
+        if (fullscreenContainer) fullscreenContainer.style.display = 'none';
+        if (gamesGrid) gamesGrid.style.display = 'block';
+        if (hero) hero.style.display = 'block';
+        
+        // Remove body class
+        document.body.classList.remove('game-active');
+        
+        this.currentGame = null;
+        
+        // Track analytics
+        if (typeof gtag !== 'undefined' && this.currentGame) {
+            gtag('event', 'game_exit', {
+                'game_name': this.currentGame.id,
+                'event_category': 'games'
+            });
+        }
+    }
+    
+    toggleFullscreen() {
+        if (this.isFullscreen) {
+            this.exitFullscreen();
+        } else {
+            this.enterFullscreen();
+        }
+    }
+    
+    enterFullscreen() {
+        const element = document.getElementById('fullscreen-game');
+        if (!element) return;
+        
+        const requestFullscreen = element.requestFullscreen || 
+                                element.webkitRequestFullscreen || 
+                                element.mozRequestFullScreen || 
+                                element.msRequestFullscreen;
+        
+        if (requestFullscreen) {
+            requestFullscreen.call(element);
+        }
+    }
+    
+    exitFullscreen() {
+        const exitFullscreen = document.exitFullscreen || 
+                             document.webkitExitFullscreen || 
+                             document.mozCancelFullScreen || 
+                             document.msExitFullscreen;
+        
+        if (exitFullscreen) {
+            exitFullscreen.call(document);
+        }
+    }
+    
+    handleFullscreenChange() {
+        this.isFullscreen = !!(document.fullscreenElement || 
+                             document.webkitFullscreenElement || 
+                             document.mozFullScreenElement || 
+                             document.msFullscreenElement);
+        
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        if (fullscreenBtn) {
+            fullscreenBtn.textContent = this.isFullscreen ? '⛶' : '⛶';
+            fullscreenBtn.setAttribute('aria-label', 
+                this.isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen');
+        }
+        
+        // Update body class for fullscreen styling
+        document.body.classList.toggle('fullscreen-active', this.isFullscreen);
+    }
+    
+    isFullscreenSupported() {
+        return !!(document.fullscreenEnabled || 
+                 document.webkitFullscreenEnabled || 
+                 document.mozFullScreenEnabled || 
+                 document.msFullscreenEnabled);
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.gameHub = new GameHub();
+});
+
+// Make available globally
+if (typeof window !== 'undefined') {
+    window.GameHub = GameHub;
+}
