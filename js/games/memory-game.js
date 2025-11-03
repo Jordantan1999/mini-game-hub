@@ -277,6 +277,16 @@ class MemoryGame {
         this.render();
         this.attachEventListeners();
     }
+    
+    destroy() {
+        // Clean up timer and event listeners
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+        }
+        if (this.container) {
+            this.container.innerHTML = '';
+        }
+    }
 }
 
 // Export for use in other modules

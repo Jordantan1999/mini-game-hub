@@ -113,6 +113,13 @@ class TicTacToe {
         this.render();
         this.attachEventListeners();
     }
+    
+    destroy() {
+        // Clean up any event listeners or intervals
+        if (this.container) {
+            this.container.innerHTML = '';
+        }
+    }
 }
 
 // Export for use in other modules

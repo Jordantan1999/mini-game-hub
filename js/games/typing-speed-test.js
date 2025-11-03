@@ -325,6 +325,16 @@ class TypingSpeedTest {
             if (input) input.focus();
         }, 100);
     }
+    
+    destroy() {
+        // Clean up timer and event listeners
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+        }
+        if (this.container) {
+            this.container.innerHTML = '';
+        }
+    }
 }
 
 // Export for use in other modules

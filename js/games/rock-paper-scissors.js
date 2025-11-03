@@ -164,6 +164,13 @@ class RockPaperScissors {
         
         this.updateScore();
     }
+    
+    destroy() {
+        // Clean up any event listeners
+        if (this.container) {
+            this.container.innerHTML = '';
+        }
+    }
 }
 
 // Export for use in other modules

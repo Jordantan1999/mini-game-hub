@@ -288,6 +288,17 @@ class SnakeGame {
     setHighScore(score) {
         localStorage.setItem('snake-high-score', score.toString());
     }
+    
+    destroy() {
+        // Clean up game loop and event listeners
+        if (this.gameLoop) {
+            clearInterval(this.gameLoop);
+        }
+        this.gameRunning = false;
+        if (this.container) {
+            this.container.innerHTML = '';
+        }
+    }
 }
 
 // Export for use in other modules

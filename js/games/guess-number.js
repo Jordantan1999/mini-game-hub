@@ -165,6 +165,13 @@ class GuessNumber {
             if (input) input.focus();
         }, 100);
     }
+    
+    destroy() {
+        // Clean up any event listeners
+        if (this.container) {
+            this.container.innerHTML = '';
+        }
+    }
 }
 
 // Export for use in other modules

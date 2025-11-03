@@ -196,29 +196,38 @@ class GameHub {
         if (!gameContentArea) return;
         
         // Clear previous game
-        gameContentArea.innerHTML = `<div id="current-game-container"></div>`;
+        gameContentArea.innerHTML = `
+            <div class="game-container">
+                <div id="current-game-container"></div>
+            </div>
+        `;
         
-        // Create game instance
-        try {
-            const GameClass = window[game.className];
-            if (GameClass) {
-                this.currentGameInstance = new GameClass('current-game-container');
-            } else {
-                console.error(`Game class ${game.className} not found`);
-                gameContentArea.innerHTML = `
-                    <div class="game-error">
-                        <h3>Game not available</h3>
-                        <p>Sorry, ${game.title} is currently unavailable.</p>
-                        <button class="btn" onclick="gameHub.exitGame()">Back to Games</button>
-                    </div>
-                `;
+        // Wait a moment for DOM to update, then create game instance
+        setTimeout(() => {
+            try {
+                const GameClass = window[game.className];
+                if (GameClass) {
+                    console.log(`Initializing ${game.className}...`);
+                    this.currentGameInstance = new GameClass('current-game-container');
+                    console.log(`${game.className} initialized successfully`);
+                } else {
+                    console.error(`Game class ${game.className} not found`);
+                    this.showGameError(game, 'Game class not found');
+                }
+            } catch (error) {
+                console.error('Error initializing game:', error);
+                this.showGameError(game, error.message);
             }
-        } catch (error) {
-            console.error('Error initializing game:', error);
+        }, 100);
+    }
+    
+    showGameError(game, errorMessage) {
+        const gameContentArea = document.getElementById('game-content-area');
+        if (gameContentArea) {
             gameContentArea.innerHTML = `
                 <div class="game-error">
-                    <h3>Error loading game</h3>
-                    <p>There was a problem loading ${game.title}.</p>
+                    <h3>Error loading ${game.title}</h3>
+                    <p>There was a problem loading the game: ${errorMessage}</p>
                     <button class="btn" onclick="gameHub.exitGame()">Back to Games</button>
                 </div>
             `;
@@ -249,15 +258,15 @@ class GameHub {
         // Remove body class
         document.body.classList.remove('game-active');
         
-        this.currentGame = null;
-        
-        // Track analytics
+        // Track analytics before clearing currentGame
         if (typeof gtag !== 'undefined' && this.currentGame) {
             gtag('event', 'game_exit', {
                 'game_name': this.currentGame.id,
                 'event_category': 'games'
             });
         }
+        
+        this.currentGame = null;
     }
     
     toggleFullscreen() {
@@ -320,7 +329,13 @@ class GameHub {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.gameHub = new GameHub();
+    console.log('Initializing Game Hub...');
+    try {
+        window.gameHub = new GameHub();
+        console.log('Game Hub initialized successfully');
+    } catch (error) {
+        console.error('Error initializing Game Hub:', error);
+    }
 });
 
 // Make available globally
