@@ -60,6 +60,86 @@ class GameHub {
                 icon: '⌨️',
                 color: '#1abc9c',
                 className: 'TypingSpeedTest'
+            },
+            {
+                id: '2048',
+                title: '2048',
+                description: 'Combine tiles to reach 2048',
+                icon: '🔢',
+                color: '#f39c12',
+                className: 'Game2048'
+            },
+            {
+                id: 'whack-a-mole',
+                title: 'Whack-a-Mole',
+                description: 'Click moles before they disappear',
+                icon: '🐹',
+                color: '#8b4513',
+                className: 'WhackAMole'
+            },
+            {
+                id: 'reaction-time',
+                title: 'Reaction Time',
+                description: 'Test your reflexes',
+                icon: '⚡',
+                color: '#e74c3c',
+                className: 'ReactionTime'
+            },
+            {
+                id: 'flappy-bird',
+                title: 'Flappy Bird',
+                description: 'Avoid obstacles to keep flying',
+                icon: '🐦',
+                color: '#3498db',
+                className: 'FlappyBird'
+            },
+            {
+                id: 'balloon-pop',
+                title: 'Balloon Pop',
+                description: 'Pop balloons that float up',
+                icon: '🎈',
+                color: '#e91e63',
+                className: 'BalloonPop'
+            },
+            {
+                id: 'math-quiz',
+                title: 'Math Quiz',
+                description: 'Timed arithmetic problems',
+                icon: '🧮',
+                color: '#9c27b0',
+                className: 'MathQuiz'
+            },
+            {
+                id: 'color-match',
+                title: 'Color Match',
+                description: 'Stroop effect challenge',
+                icon: '🎨',
+                color: '#ff5722',
+                className: 'ColorMatch'
+            },
+            {
+                id: 'sliding-puzzle',
+                title: 'Sliding Puzzle',
+                description: 'Arrange tiles in order',
+                icon: '🧩',
+                color: '#607d8b',
+                className: 'SlidingPuzzle'
+            },
+            {
+                id: 'breakout',
+                title: 'Breakout',
+                description: 'Break bricks with paddle and ball',
+                icon: '🧱',
+                color: '#795548',
+                className: 'Breakout'
+            },
+            {
+                id: 'dodge-blocks',
+                title: 'Dodge Blocks',
+                description: 'Avoid falling obstacles',
+                icon: '🏃',
+                color: '#ff9800',
+                className: 'DodgeBlocks'
             }
         ];
         
