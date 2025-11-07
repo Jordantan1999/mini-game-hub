@@ -77,9 +77,10 @@ class Breakout {
                 </div>
                 
                 <div class="game-instructions">
-                    <p>🏓 Use arrow keys or mouse to move the paddle</p>
+                    <p>🏓 Use arrow keys, mouse, or touch to move the paddle</p>
                     <p>🧱 Break all bricks to advance to the next level</p>
                     <p>❤️ Don't let the ball fall off the bottom!</p>
+                    <p>📱 Mobile: Touch and drag on the canvas to move paddle</p>
                 </div>
             </div>
         `;
@@ -123,6 +124,29 @@ class Breakout {
                 const mouseX = e.clientX - rect.left;
                 if (this.gameRunning) {
                     this.paddle.x = mouseX - this.paddle.width / 2;
+                    this.paddle.x = Math.max(0, Math.min(this.canvas.width - this.paddle.width, this.paddle.x));
+                }
+            });
+            
+            // Touch controls for mobile
+            this.canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const rect = this.canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const touchX = touch.clientX - rect.left;
+                if (this.gameRunning) {
+                    this.paddle.x = touchX - this.paddle.width / 2;
+                    this.paddle.x = Math.max(0, Math.min(this.canvas.width - this.paddle.width, this.paddle.x));
+                }
+            });
+            
+            this.canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const rect = this.canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const touchX = touch.clientX - rect.left;
+                if (this.gameRunning) {
+                    this.paddle.x = touchX - this.paddle.width / 2;
                     this.paddle.x = Math.max(0, Math.min(this.canvas.width - this.paddle.width, this.paddle.x));
                 }
             });
