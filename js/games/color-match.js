@@ -122,6 +122,7 @@ class ColorMatch {
         
         this.generateChallenge();
         this.render();
+        this.attachEventListeners();
         
         this.timerInterval = setInterval(() => {
             this.timeLeft--;
@@ -140,6 +141,7 @@ class ColorMatch {
             this.timerInterval = null;
         }
         this.render();
+        this.attachEventListeners();
     }
     
     generateChallenge() {
@@ -220,6 +222,7 @@ class ColorMatch {
         setTimeout(() => {
             alert(`🎨 Time's up!\n\nFinal Score: ${this.score}\nBest Streak: ${this.streak}\n\nGreat job fighting the Stroop effect!`);
             this.render();
+            this.attachEventListeners();
         }, 100);
     }
     

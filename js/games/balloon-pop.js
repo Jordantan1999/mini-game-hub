@@ -122,6 +122,7 @@ class BalloonPop {
         this.timerInterval = setInterval(() => this.updateTimer(), 1000);
         
         this.render();
+        this.attachEventListeners();
     }
     
     stopGame() {
@@ -129,6 +130,7 @@ class BalloonPop {
         this.clearIntervals();
         this.balloons = [];
         this.render();
+        this.attachEventListeners();
     }
     
     resetGame() {
@@ -136,6 +138,7 @@ class BalloonPop {
         this.score = 0;
         this.timeLeft = 60;
         this.render();
+        this.attachEventListeners();
     }
     
     update() {

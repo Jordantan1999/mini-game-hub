@@ -223,6 +223,37 @@ class GameHub {
         document.addEventListener('webkitfullscreenchange', () => this.handleFullscreenChange());
         document.addEventListener('mozfullscreenchange', () => this.handleFullscreenChange());
         document.addEventListener('MSFullscreenChange', () => this.handleFullscreenChange());
+        
+        // About section navigation
+        const aboutLinks = document.querySelectorAll('a[href="#about"]');
+        aboutLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showAbout();
+            });
+        });
+    }
+    
+    showAbout() {
+        const aboutSection = document.getElementById('about');
+        const mainContent = document.getElementById('main-content');
+        
+        if (aboutSection) aboutSection.style.display = 'block';
+        if (mainContent) mainContent.style.display = 'none';
+        
+        // Scroll to top
+        window.scrollTo(0, 0);
+    }
+    
+    hideAbout() {
+        const aboutSection = document.getElementById('about');
+        const mainContent = document.getElementById('main-content');
+        
+        if (aboutSection) aboutSection.style.display = 'none';
+        if (mainContent) mainContent.style.display = 'block';
+        
+        // Scroll to top
+        window.scrollTo(0, 0);
     }
     
     setupFullscreenAPI() {
@@ -421,4 +452,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // Make available globally
 if (typeof window !== 'undefined') {
     window.GameHub = GameHub;
+    window.hideAbout = function() {
+        if (window.gameHub) {
+            window.gameHub.hideAbout();
+        }
+    };
 }

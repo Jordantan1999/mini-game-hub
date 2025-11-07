@@ -30,6 +30,11 @@ class DodgeBlocks {
     init() {
         this.render();
         this.attachEventListeners();
+        // Initialize player position after canvas is created
+        if (this.canvas) {
+            this.player.x = this.canvas.width / 2 - this.player.width / 2;
+            this.player.y = this.canvas.height - this.player.height - 10;
+        }
     }
     
     render() {
@@ -84,8 +89,8 @@ class DodgeBlocks {
         this.canvas = this.container.querySelector('#dodge-canvas');
         this.ctx = this.canvas.getContext('2d');
         
-        this.resetGame();
-        if (!this.gameRunning) {
+        // Initialize canvas display
+        if (!this.gameRunning && this.ctx) {
             this.drawStartScreen();
         }
     }
@@ -104,7 +109,10 @@ class DodgeBlocks {
             startStopBtn.addEventListener('click', () => this.toggleGame());
         }
         if (resetBtn) {
-            resetBtn.addEventListener('click', () => this.resetGame());
+            resetBtn.addEventListener('click', () => {
+                this.resetGame();
+                this.render();
+            });
         }
         
         // Mobile controls
@@ -162,6 +170,7 @@ class DodgeBlocks {
         this.gameLoop = setInterval(() => this.update(), 1000 / 60);
         
         this.render();
+        this.attachEventListeners();
     }
     
     pauseGame() {
@@ -171,6 +180,7 @@ class DodgeBlocks {
             this.gameLoop = null;
         }
         this.render();
+        this.attachEventListeners();
     }
     
     resetGame() {
@@ -186,10 +196,11 @@ class DodgeBlocks {
         this.gameSpeed = 2;
         this.spawnRate = 0.02;
         
-        if (this.canvas) {
+        // Only redraw if canvas exists, don't re-render entire component
+        if (this.canvas && this.ctx) {
             this.drawStartScreen();
+            this.updateDisplay();
         }
-        this.render();
     }
     
     update() {
@@ -347,6 +358,7 @@ class DodgeBlocks {
         setTimeout(() => {
             alert(`💥 Game Over!\n\nFinal Score: ${this.score}\nMax Speed: ${this.gameSpeed.toFixed(1)}x\n\nYou survived ${Math.floor(this.score / 10)} blocks!`);
             this.render();
+            this.attachEventListeners();
         }, 100);
     }
     

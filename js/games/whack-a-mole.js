@@ -105,6 +105,7 @@ class WhackAMole {
         // Start spawning moles
         this.spawnMoles();
         this.render();
+        this.attachEventListeners();
     }
     
     stopGame() {
@@ -113,6 +114,7 @@ class WhackAMole {
         this.activeMoles.clear();
         this.moles.fill(false);
         this.render();
+        this.attachEventListeners();
     }
     
     endGame() {
@@ -124,6 +126,7 @@ class WhackAMole {
         setTimeout(() => {
             alert(`🎉 Game Over! Your score: ${this.score} points!`);
             this.render();
+            this.attachEventListeners();
         }, 100);
     }
     
@@ -132,6 +135,7 @@ class WhackAMole {
         this.score = 0;
         this.timeLeft = 30;
         this.render();
+        this.attachEventListeners();
     }
     
     spawnMoles() {

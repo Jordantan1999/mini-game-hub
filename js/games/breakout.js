@@ -183,6 +183,7 @@ class Breakout {
         this.gameLoop = setInterval(() => this.update(), 1000 / 60);
         
         this.render();
+        this.attachEventListeners();
     }
     
     pauseGame() {
@@ -192,6 +193,7 @@ class Breakout {
             this.gameLoop = null;
         }
         this.render();
+        this.attachEventListeners();
     }
     
     resetGame() {
@@ -201,6 +203,7 @@ class Breakout {
         this.level = 1;
         this.initializeGame();
         this.render();
+        this.attachEventListeners();
     }
     
     update() {
@@ -375,6 +378,7 @@ class Breakout {
         setTimeout(() => {
             alert(`🎮 Game Over!\n\nFinal Score: ${this.score}\nLevel Reached: ${this.level}`);
             this.render();
+            this.attachEventListeners();
         }, 100);
     }
     

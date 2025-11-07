@@ -143,6 +143,7 @@ class ReactionTime {
     startTest() {
         this.state = 'ready';
         this.render();
+        this.attachEventListeners();
         
         // Wait random time between 2-6 seconds
         const waitTime = Math.random() * 4000 + 2000;
@@ -152,12 +153,14 @@ class ReactionTime {
                 this.state = 'go';
                 this.startTime = Date.now();
                 this.render();
+                this.attachEventListeners();
                 
                 // Auto-timeout after 5 seconds
                 this.timeout = setTimeout(() => {
                     if (this.state === 'go') {
                         this.state = 'waiting';
                         this.render();
+                        this.attachEventListeners();
                     }
                 }, 5000);
             }
@@ -171,10 +174,12 @@ class ReactionTime {
                 this.state = 'too-early';
                 this.clearTimeout();
                 this.render();
+                this.attachEventListeners();
                 
                 setTimeout(() => {
                     this.state = 'waiting';
                     this.render();
+                    this.attachEventListeners();
                 }, 2000);
                 break;
                 
@@ -185,10 +190,12 @@ class ReactionTime {
                 this.state = 'result';
                 this.clearTimeout();
                 this.render();
+                this.attachEventListeners();
                 
                 setTimeout(() => {
                     this.state = 'waiting';
                     this.render();
+                    this.attachEventListeners();
                 }, 3000);
                 break;
                 
@@ -207,6 +214,7 @@ class ReactionTime {
         this.state = 'waiting';
         this.clearTimeout();
         this.render();
+        this.attachEventListeners();
     }
     
     clearTimeout() {

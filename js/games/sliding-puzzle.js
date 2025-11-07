@@ -183,6 +183,7 @@ class SlidingPuzzle {
         
         this.moves = 0; // Reset move counter after shuffle
         this.render();
+        this.attachEventListeners();
     }
     
     getPossibleMoves() {
@@ -229,10 +230,12 @@ class SlidingPuzzle {
         
         this.initializeTiles();
         this.render();
+        this.attachEventListeners();
         
         setTimeout(() => {
             this.gameCompleted = true;
             this.render();
+            this.attachEventListeners();
         }, 500);
     }
     

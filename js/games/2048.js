@@ -159,6 +159,7 @@ class Game2048 {
             this.updateScore();
             this.checkGameState();
             this.render();
+            this.attachEventListeners();
         }
     }
     
@@ -348,6 +349,7 @@ class Game2048 {
         this.addRandomTile();
         this.addRandomTile();
         this.render();
+        this.attachEventListeners();
     }
     
     destroy() {

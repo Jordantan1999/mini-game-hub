@@ -137,6 +137,7 @@ class MathQuiz {
         
         this.generateProblem();
         this.render();
+        this.attachEventListeners();
         
         // Focus on input
         setTimeout(() => {
@@ -162,6 +163,7 @@ class MathQuiz {
             this.timerInterval = null;
         }
         this.render();
+        this.attachEventListeners();
     }
     
     generateProblem() {
@@ -299,6 +301,7 @@ class MathQuiz {
         setTimeout(() => {
             alert(`🧮 Time's up!\n\nScore: ${this.score}\nProblems solved: ${correct}/${total}\nAccuracy: ${accuracy}%\nBest streak: ${this.streak}`);
             this.render();
+            this.attachEventListeners();
         }, 100);
     }
     
