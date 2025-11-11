@@ -2376,6 +2376,13 @@ Whack-a-Mole Styles */
     font-size: 1.5rem;
 }
 
+.tile-2048[data-value="4096"],
+.tile-2048[data-value="8192"] {
+    background: #3c3a32;
+    color: #f9f6f2;
+    font-size: 1.25rem;
+}
+
 /* Mobile responsiveness for all games */
 @media (max-width: 480px) {
     .reaction-box {

@@ -129,6 +129,8 @@
     z-index: 1000;
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .game-header-bar {
@@ -193,17 +195,18 @@
 
 .game-content-area {
     flex: 1;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
+    min-height: 0;
 }
 
 #current-game-container {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
+    display: block;
 }
 
 /* Game Container Styling */
