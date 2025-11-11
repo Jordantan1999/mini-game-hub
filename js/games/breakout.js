@@ -399,8 +399,16 @@ class Breakout {
             this.gameLoop = null;
         }
         
+        const finalScore = this.score;
+        const finalLevel = this.level;
+        
         setTimeout(() => {
-            alert(`🎮 Game Over!\n\nFinal Score: ${this.score}\nLevel Reached: ${this.level}`);
+            alert(`🎮 Game Over!\n\nFinal Score: ${finalScore}\nLevel Reached: ${finalLevel}`);
+            // Reset game state
+            this.score = 0;
+            this.lives = 3;
+            this.level = 1;
+            this.initializeGame();
             this.render();
             this.attachEventListeners();
         }, 100);

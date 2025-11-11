@@ -131,7 +131,10 @@ class MemoryGame {
                 
                 // Check for win
                 if (this.matched.length === this.cards.length) {
-                    setTimeout(() => this.render(), 100);
+                    setTimeout(() => {
+                        this.render();
+                        this.attachEventListeners();
+                    }, 100);
                 }
             } else {
                 // No match - flip back after delay

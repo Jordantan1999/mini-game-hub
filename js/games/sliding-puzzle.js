@@ -105,6 +105,7 @@ class SlidingPuzzle {
         
         if (puzzleBoard) {
             puzzleBoard.addEventListener('click', (e) => this.handleTileClick(e));
+            this.setupSwipeControls(puzzleBoard);
         }
         if (shuffleBtn) {
             shuffleBtn.addEventListener('click', () => this.shufflePuzzle());
@@ -115,6 +116,68 @@ class SlidingPuzzle {
         if (solveBtn) {
             solveBtn.addEventListener('click', () => this.autoSolve());
         }
+    }
+    
+    setupSwipeControls(board) {
+        let startX, startY;
+        
+        board.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+        
+        board.addEventListener('touchend', (e) => {
+            if (!startX || !startY) return;
+            
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+            
+            // Find empty tile position
+            let emptyRow, emptyCol;
+            for (let i = 0; i < this.size; i++) {
+                for (let j = 0; j < this.size; j++) {
+                    if (this.tiles[i][j] === 0) {
+                        emptyRow = i;
+                        emptyCol = j;
+                    }
+                }
+            }
+            
+            // Determine swipe direction and move tile
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                // Horizontal swipe
+                if (diffX > 30) {
+                    // Swipe left - move tile from right
+                    if (emptyCol < this.size - 1) {
+                        this.moveTile(emptyRow, emptyCol + 1);
+                    }
+                } else if (diffX < -30) {
+                    // Swipe right - move tile from left
+                    if (emptyCol > 0) {
+                        this.moveTile(emptyRow, emptyCol - 1);
+                    }
+                }
+            } else {
+                // Vertical swipe
+                if (diffY > 30) {
+                    // Swipe up - move tile from below
+                    if (emptyRow < this.size - 1) {
+                        this.moveTile(emptyRow + 1, emptyCol);
+                    }
+                } else if (diffY < -30) {
+                    // Swipe down - move tile from above
+                    if (emptyRow > 0) {
+                        this.moveTile(emptyRow - 1, emptyCol);
+                    }
+                }
+            }
+            
+            startX = null;
+            startY = null;
+        });
     }
     
     handleTileClick(event) {

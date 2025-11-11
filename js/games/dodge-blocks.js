@@ -112,6 +112,7 @@ class DodgeBlocks {
             resetBtn.addEventListener('click', () => {
                 this.resetGame();
                 this.render();
+                this.attachEventListeners();
             });
         }
         

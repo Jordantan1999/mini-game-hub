@@ -123,6 +123,11 @@ class RockPaperScissors {
     }
     
     determineWinner() {
+        if (!this.playerChoice || !this.computerChoice) {
+            console.error('Player or computer choice is null');
+            return;
+        }
+        
         const player = this.playerChoice.name;
         const computer = this.computerChoice.name;
         const resultText = this.container.querySelector('#result-text');
